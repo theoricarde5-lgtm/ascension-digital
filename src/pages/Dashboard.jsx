@@ -8,6 +8,8 @@ import SidePanel from '@/components/dashboard/SidePanel';
 import LogsView from '@/components/dashboard/LogsView';
 import RequestModal from '@/components/dashboard/RequestModal';
 import Toast from '@/components/dashboard/Toast';
+import RequestsView from '@/components/dashboard/RequestsView';
+import AnnouncementsView from '@/components/dashboard/AnnouncementsView';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -17,6 +19,8 @@ export default function Dashboard() {
   const [movements, setMovements] = useState([]);
   const [logs, setLogs] = useState([]);
   const [announcement, setAnnouncement] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
   const [loading, setLoading] = useState(true);
@@ -27,14 +31,17 @@ export default function Dashboard() {
   };
 
   const loadData = useCallback(async () => {
-    const [mv, lg, an] = await Promise.all([
+    const [mv, lg, an, reqs] = await Promise.all([
       base44.entities.Movement.list('-created_date'),
       base44.entities.LogEntry.list('-created_date'),
-      base44.entities.Announcement.list('-created_date', 1),
+      base44.entities.Announcement.list('-created_date'),
+      base44.entities.Request.list('-created_date'),
     ]);
     setMovements(mv);
     setLogs(lg);
+    setAnnouncements(an);
     setAnnouncement(an[0] || null);
+    setRequests(reqs);
   }, []);
 
   useEffect(() => {
@@ -117,19 +124,9 @@ export default function Dashboard() {
 
         {currentView === 'logs' && <LogsView logs={logs} />}
 
-        {currentView === 'stats' && (
-          <div className="rounded-[22px] p-[22px] mt-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
-            <h2 className="font-display text-[15.5px] font-bold">Statistiques</h2>
-            <p className="text-[12.5px] mt-2" style={{ color: '#6C6479' }}>Section à venir.</p>
-          </div>
-        )}
+        {currentView === 'requests' && <RequestsView requests={requests} />}
 
-        {currentView === 'settings' && (
-          <div className="rounded-[22px] p-[22px] mt-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
-            <h2 className="font-display text-[15.5px] font-bold">Paramètres</h2>
-            <p className="text-[12.5px] mt-2" style={{ color: '#6C6479' }}>Section à venir.</p>
-          </div>
-        )}
+        {currentView === 'announcements' && <AnnouncementsView announcements={announcements} />}
       </div>
 
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />
