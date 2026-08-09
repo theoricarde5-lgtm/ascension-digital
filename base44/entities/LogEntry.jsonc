@@ -1,0 +1,28 @@
+{
+  "name": "LogEntry",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": [
+        "Ajout",
+        "Suppression"
+      ]
+    },
+    "detail": {
+      "type": "string"
+    },
+    "user": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "detail",
+    "user",
+    "role"
+  ]
+}
