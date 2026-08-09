@@ -10,6 +10,7 @@ import RequestModal from '@/components/dashboard/RequestModal';
 import Toast from '@/components/dashboard/Toast';
 import RequestsView from '@/components/dashboard/RequestsView';
 import AnnouncementsView from '@/components/dashboard/AnnouncementsView';
+import ObjetsView from '@/components/dashboard/ObjetsView';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [announcement, setAnnouncement] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [objets, setObjets] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
   const [loading, setLoading] = useState(true);
@@ -31,17 +33,19 @@ export default function Dashboard() {
   };
 
   const loadData = useCallback(async () => {
-    const [mv, lg, an, reqs] = await Promise.all([
+    const [mv, lg, an, reqs, objs] = await Promise.all([
       base44.entities.Movement.list('-created_date'),
       base44.entities.LogEntry.list('-created_date'),
       base44.entities.Announcement.list('-created_date'),
       base44.entities.Request.list('-created_date'),
+      base44.entities.Objet.list('-created_date'),
     ]);
     setMovements(mv);
     setLogs(lg);
     setAnnouncements(an);
     setAnnouncement(an[0] || null);
     setRequests(reqs);
+    setObjets(objs);
   }, []);
 
   useEffect(() => {
@@ -80,6 +84,15 @@ export default function Dashboard() {
     await base44.entities.Request.create({ type, subject, message });
     setModalOpen(false);
     showToast('Formulaire envoyé');
+  };
+
+  const handleAddObjet = async (data) => {
+    await base44.entities.Objet.create(data);
+    await loadData();
+  };
+  const handleDeleteObjet = async (o) => {
+    await base44.entities.Objet.delete(o.id);
+    await loadData();
   };
 
   const handleLogout = async () => {
@@ -123,6 +136,8 @@ export default function Dashboard() {
         )}
 
         {currentView === 'logs' && <LogsView logs={logs} />}
+
+        {currentView === 'objets' && <ObjetsView objets={objets} onAdd={handleAddObjet} onDelete={handleDeleteObjet} />}
 
         {currentView === 'requests' && <RequestsView requests={requests} />}
 

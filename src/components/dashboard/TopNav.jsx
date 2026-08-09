@@ -4,6 +4,7 @@ import { LogOut, Edit3 } from 'lucide-react';
 export default function TopNav({ currentView, onViewChange, role, onRoleChange, user, onOpenForm, onLogout }) {
   const pills = [
     { id: 'dashboard', label: 'Espace personnel' },
+    { id: 'objets', label: 'Objet' },
     { id: 'requests', label: 'Demandes' },
     { id: 'logs', label: 'Logs' },
     { id: 'announcements', label: 'Annonces' },
