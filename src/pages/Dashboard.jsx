@@ -56,6 +56,26 @@ export default function Dashboard() {
     loadAll();
   }, [loadAll, navigate]);
 
+  // Real-time subscriptions: any change (local, other tab, webhook) updates instantly
+  useEffect(() => {
+    if (!sessionStorage.getItem('ls_user')) return;
+    const subscribeEntity = (entity, setter) => entity.subscribe((event) => {
+      if (event.type === 'create') setter(prev => [event.data, ...prev]);
+      else if (event.type === 'update') setter(prev => prev.map(x => (x.id === event.data.id ? event.data : x)));
+      else if (event.type === 'delete') setter(prev => prev.filter(x => x.id !== event.data.id));
+    });
+    const unsubs = [
+      subscribeEntity(base44.entities.Objet, setObjets),
+      subscribeEntity(base44.entities.Bijou, setBijoux),
+      subscribeEntity(base44.entities.Outil, setOutils),
+      subscribeEntity(base44.entities.Movement, setMovements),
+      subscribeEntity(base44.entities.Categorie, setCategories),
+      subscribeEntity(base44.entities.CategorieBijou, setCatBijoux),
+      subscribeEntity(base44.entities.CategorieOutil, setCatOutils),
+    ];
+    return () => unsubs.forEach(u => u && u());
+  }, []);
+
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
     try {
