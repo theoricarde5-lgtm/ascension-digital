@@ -1,5 +1,6 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { Shield, Phone } from 'lucide-react';
+import { dateStr } from '@/lib/coffre';
 
 const PERMS = [
   { key: 'movements', label: 'Mouvements' },
@@ -61,14 +62,18 @@ export default function UsersView({ users, currentUser, onUpdateRole, permission
               style={{ borderBottom: i < users.length - 1 ? '1px solid rgba(255,255,255,0.10)' : 'none' }}>
               <div className="w-9 h-9 rounded-full flex-none flex items-center justify-center text-xs font-bold font-display text-white"
                 style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)' }}>
-                {(u.full_name || u.email || '?').slice(0, 1).toUpperCase()}
+                {(u.username || u.full_name || u.email || '?').slice(0, 1).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[13.5px] font-semibold">
-                  {u.full_name || u.email}
+                  {u.username || u.full_name || u.email}
                   {u.id === currentUser?.id && <span className="ml-2 text-[10px] font-bold uppercase" style={{ color: '#C7B3FA' }}>Toi</span>}
                 </div>
-                <div className="text-[11.5px] mt-0.5" style={{ color: '#6C6479' }}>{u.email}</div>
+                <div className="text-[11.5px] mt-0.5 flex items-center gap-2 flex-wrap" style={{ color: '#6C6479' }}>
+                  <span className="truncate">{u.email}</span>
+                  {u.phone && <span className="inline-flex items-center gap-1"><Phone size={10} />{u.phone}</span>}
+                  <span>· inscrit {dateStr(u.created_date)}</span>
+                </div>
               </div>
               <select value={u.coffre_role || 'Soldat'} onChange={(e) => onUpdateRole(u, e.target.value)}
                 className="rounded-full px-3 py-2 text-xs font-semibold cursor-pointer"
