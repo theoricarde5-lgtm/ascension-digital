@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Calculator, Check, X, Plus } from 'lucide-react';
 import { AddModal as AddObjetModal } from '@/components/dashboard/ObjetsView';
 
-export default function CalculateurView({ objets = [], bijoux = [], categories = [], catObjets = [], sources = [], onAddBijou, onAddObjet, onAddSource }) {
+export default function CalculateurView({ objets = [], bijoux = [], categories = [], catObjets = [], sources = [], onAddBijou, onAddObjet, onAddSource, onValidate }) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState({}); // { key: { prix, quantite } }
   const [activeType, setActiveType] = useState('Tous');
@@ -50,6 +50,21 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
 
   const clearAll = () => setSelected({});
 
+  const handleValidate = () => {
+    if (count === 0) return;
+    const details = selectedKeys.map(k => {
+      const it = items.find(i => i.key === k);
+      const s = selected[k];
+      return `${it?.nom || k} (x${s.quantite} @ ${s.prix}$)`;
+    }).join(' · ');
+    onValidate?.({ total, count, details, items: selectedKeys.map(k => {
+      const it = items.find(i => i.key === k);
+      const s = selected[k];
+      return { nom: it?.nom, type: it?.type, prix: s.prix, quantite: s.quantite, sousTotal: s.prix * s.quantite };
+    }) });
+    setSelected({});
+  };
+
   return (
     <div>
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
@@ -88,7 +103,12 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
         <div className="flex items-center gap-4">
           <div className="text-[28px] font-bold text-white">{total.toLocaleString('fr-FR')} $</div>
           {count > 0 && (
-            <button onClick={clearAll} className="rounded-xl px-3 py-2 text-[12px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Tout effacer</button>
+            <div className="flex items-center gap-2">
+              <button onClick={clearAll} className="rounded-xl px-3 py-2 text-[12px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Tout effacer</button>
+              <button onClick={handleValidate} className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-[12.5px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>
+                <Check size={14} /> Valider
+              </button>
+            </div>
           )}
         </div>
       </div>

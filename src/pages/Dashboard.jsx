@@ -244,6 +244,18 @@ export default function Dashboard() {
     await loadAll();
   };
 
+  const validateCalculateur = useCallback(async ({ total, count, details }) => {
+    try {
+      await base44.entities.Movement.create({
+        type: 'depot',
+        montant: total,
+        note: `Calcul validé : ${count} objet${count > 1 ? 's' : ''} — ${details}`
+      });
+      await logAction('Calcul validé', `${count} objet${count > 1 ? 's' : ''} — ${total}€`);
+    } catch (e) {}
+    await loadAll();
+  }, [logAction, loadAll]);
+
   const updateProfile = useCallback(async ({ couleur, photo }) => {
     try {
       const matches = await base44.entities.Compte.filter({ matricule: currentUser?.matricule });
@@ -340,7 +352,7 @@ export default function Dashboard() {
         )}
 
         {view === 'calculateur' && (
-          <CalculateurView objets={objets} bijoux={bijoux} categories={catBijoux} catObjets={categories} sources={sources} onAddBijou={addBijou} onAddObjet={addObjet} onAddSource={addSource} />
+          <CalculateurView objets={objets} bijoux={bijoux} categories={catBijoux} catObjets={categories} sources={sources} onAddBijou={addBijou} onAddObjet={addObjet} onAddSource={addSource} onValidate={validateCalculateur} />
         )}
       </main>
     </div>
