@@ -21,15 +21,15 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
     <div>
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-[26px] font-bold text-white tracking-tight">Registre d'outils</h1>
+          <h1 className="text-[26px] font-bold text-white tracking-tight">Stock</h1>
           <p className="text-[13.5px] mt-1" style={{ color: '#808080' }}>
-            {outils.length} outil{outils.length > 1 ? 's' : ''} · {totalUnits} unité{totalUnits > 1 ? 's' : ''} au total
+            {outils.length} article{outils.length > 1 ? 's' : ''} · {totalUnits} unité{totalUnits > 1 ? 's' : ''} au total
           </p>
         </div>
         <button onClick={() => setModalOpen(true)}
           className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
           style={{ background: '#ff5722' }}>
-          <Plus size={16} /> Ajouter un outil
+          <Plus size={16} /> Ajouter au stock
         </button>
       </div>
 
@@ -37,7 +37,7 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
         <div className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 lg:w-[280px]"
           style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.06)' }}>
           <Search size={16} style={{ color: '#808080' }} />
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher un outil..."
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher dans le stock..."
             className="bg-transparent text-[13px] flex-1 outline-none" style={{ color: '#fff' }} />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -55,7 +55,7 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
             style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#808080' }}>
             <Wrench size={26} />
           </div>
-          <div className="text-[14px]" style={{ color: '#808080' }}>Aucun outil. Ajoutez votre premier outil au registre.</div>
+          <div className="text-[14px]" style={{ color: '#808080' }}>Stock vide. Ajoutez votre premier article.</div>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -84,7 +84,7 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
       )}
 
       {modalOpen && (
-        <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un outil" />
+        <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter au stock" />
       )}
 
       {sellTarget && (
