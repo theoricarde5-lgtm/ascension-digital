@@ -17,6 +17,7 @@ import BijouxView from '@/components/dashboard/BijouxView';
 import BijouxInventoryView from '@/components/dashboard/BijouxInventoryView';
 import BijouxCategoriesView from '@/components/dashboard/BijouxCategoriesView';
 import UsersView from '@/components/dashboard/UsersView';
+import ProfileView from '@/components/dashboard/ProfileView';
 import PinGate from '@/components/dashboard/PinGate';
 import { fmt } from '@/lib/coffre';
 
@@ -179,6 +180,13 @@ export default function Dashboard() {
     await base44.auth.logout();
   };
 
+  const handleProfileUpdated = async () => {
+    try {
+      const me = await base44.auth.me();
+      setUser(me);
+    } catch (e) { /* ignore */ }
+  };
+
   const soldeMov = movements.reduce((s, m) => s + (m.type === 'depot' ? m.montant : -m.montant), 0);
   const totalDepot = movements.filter(m => m.type === 'depot').reduce((s, m) => s + m.montant, 0);
   const totalRetrait = movements.filter(m => m.type === 'retrait').reduce((s, m) => s + m.montant, 0);
@@ -243,6 +251,8 @@ export default function Dashboard() {
         {currentView === 'announcements' && <AnnouncementsView announcements={announcements} />}
 
         {currentView === 'users' && <UsersView users={users} currentUser={user} onUpdateRole={handleUpdateUserRole} permissions={permissions} onUpdatePermission={handleUpdatePermission} />}
+
+        {currentView === 'profile' && <ProfileView user={user} onUpdated={handleProfileUpdated} />}
       </div>
 
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />

@@ -16,6 +16,14 @@
         "Soldat"
       ],
       "default": "Soldat"
+    },
+    "username": {
+      "type": "string",
+      "description": "Nom d'utilisateur personnalis\u00e9 affich\u00e9 dans le coffre"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Num\u00e9ro de t\u00e9l\u00e9phone du membre"
     }
   },
   "required": [
