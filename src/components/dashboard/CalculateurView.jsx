@@ -1,22 +1,21 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Calculator, Check, X } from 'lucide-react';
+import { Search, Calculator, Check, X, Plus } from 'lucide-react';
 
-export default function CalculateurView({ objets = [], bijoux = [], outils = [], armes = [] }) {
+export default function CalculateurView({ objets = [], bijoux = [], categories = [], onAddBijou }) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState({}); // { key: prix }
   const [activeType, setActiveType] = useState('Tous');
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // Build a unified list of all inventory items
+  // Build a unified list of objets + bijoux only
   const items = useMemo(() => {
     const list = [];
     objets.forEach(o => list.push({ key: `objet-${o.id}`, id: o.id, nom: o.nom, type: 'Objet', categorie: o.categorie, prixDefaut: o.prix || 0, quantite: o.quantite || 0 }));
     bijoux.forEach(b => list.push({ key: `bijou-${b.id}`, id: b.id, nom: b.nom, type: 'Bijou', categorie: b.categorie, prixDefaut: b.prix || 0, quantite: b.quantite || 0 }));
-    outils.forEach(o => list.push({ key: `outil-${o.id}`, id: o.id, nom: o.nom, type: 'Outil', categorie: o.categorie, prixDefaut: o.prix || 0, quantite: o.quantite || 0 }));
-    armes.forEach(a => list.push({ key: `arme-${a.id}`, id: a.id, nom: a.nom, type: 'Arme', categorie: a.categorie, prixDefaut: a.prix_location || 0, quantite: a.quantite || 0 }));
     return list;
-  }, [objets, bijoux, outils, armes]);
+  }, [objets, bijoux]);
 
-  const types = ['Tous', 'Objet', 'Bijou', 'Outil', 'Arme'];
+  const types = ['Tous', 'Objet', 'Bijou'];
 
   const filtered = useMemo(() => {
     return items.filter(it => {
@@ -54,6 +53,11 @@ export default function CalculateurView({ objets = [], bijoux = [], outils = [],
             Cochez les objets, ajustez les prix — le total se calcule automatiquement.
           </p>
         </div>
+        <button onClick={() => setModalOpen(true)}
+          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
+          style={{ background: 'var(--montoya-accent)' }}>
+          <Plus size={16} /> Ajouter un bijou
+        </button>
       </div>
 
       {/* Total card */}
@@ -146,6 +150,71 @@ export default function CalculateurView({ objets = [], bijoux = [], outils = [],
           })}
         </div>
       )}
+
+      {modalOpen && (
+        <AddBijouModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAddBijou?.(data); setModalOpen(false); }} />
+      )}
+    </div>
+  );
+}
+
+function AddBijouModal({ categories, onClose, onAdd }) {
+  const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '' });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.nom.trim()) return;
+    onAdd({
+      nom: form.nom.trim(),
+      categorie: form.categorie.trim(),
+      description: form.description.trim(),
+      prix: parseFloat(form.prix) || 0,
+      quantite: parseInt(form.quantite) || 0,
+    });
+  };
+  const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div className="w-full max-w-[480px] rounded-2xl p-6" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-[17px] font-semibold text-white">Ajouter un bijou</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#808080', background: '#121212' }}><X size={16} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Nom *</label>
+            <input name="nom" value={form.nom} onChange={handleChange} required placeholder="Nom"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Catégorie</label>
+            <select name="categorie" value={form.categorie} onChange={handleChange} className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
+              <option value="">— Choisir —</option>
+              {categories.map(c => <option key={c.id} value={c.nom}>{c.nom}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Prix ($)</label>
+            <input name="prix" type="number" value={form.prix} onChange={handleChange} placeholder="0"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Quantité</label>
+            <input name="quantite" type="number" value={form.quantite} onChange={handleChange} placeholder="0"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Description</label>
+            <textarea name="description" value={form.description} onChange={handleChange} placeholder="Détails..."
+              className="w-full rounded-xl px-3 py-2.5 text-[13px] resize-none min-h-[70px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2 flex justify-end gap-2 mt-1">
+            <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
+            <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
