@@ -40,9 +40,9 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col items-center py-10 px-4" style={{ background: '#0f1115' }}>
       <div className="w-full max-w-[420px] rounded-2xl p-7" style={{ background: '#1a1c21' }}>
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-lg" style={{ background: '#ff473a' }}>LS</div>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-lg" style={{ background: '#ff473a' }}>M</div>
           <div>
-            <div className="text-[18px] font-bold text-white leading-tight">LS Motorcycles</div>
+            <div className="text-[18px] font-bold text-white leading-tight">Montoya</div>
             <div className="text-[12.5px]" style={{ color: '#808080' }}>Panel de gestion</div>
           </div>
         </div>
