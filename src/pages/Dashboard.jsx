@@ -7,6 +7,7 @@ import RecentObjets from '@/components/dashboard/RecentObjets';
 import ObjetsView from '@/components/dashboard/ObjetsView';
 import BijouxView from '@/components/dashboard/BijouxView';
 import CoffreView from '@/components/dashboard/CoffreView';
+import OutilsView from '@/components/dashboard/OutilsView';
 
 export default function Dashboard() {
   const [view, setView] = useState('dashboard');
@@ -16,22 +17,28 @@ export default function Dashboard() {
   const [categories, setCategories] = useState([]);
   const [catBijoux, setCatBijoux] = useState([]);
   const [movements, setMovements] = useState([]);
+  const [outils, setOutils] = useState([]);
+  const [catOutils, setCatOutils] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
         base44.entities.CategorieBijou.list(),
         base44.entities.Movement.list('-created_date', 50),
+        base44.entities.Outil.list('-created_date', 50),
+        base44.entities.CategorieOutil.list(),
       ]);
       setObjets(o);
       setBijoux(b);
       setCategories(c);
       setCatBijoux(cb);
       setMovements(mv);
+      setOutils(ou);
+      setCatOutils(co);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -47,6 +54,8 @@ export default function Dashboard() {
   const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); } catch (e) {} await loadAll(); };
   const addMovement = async (data) => { await base44.entities.Movement.create(data); await loadAll(); };
   const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
+  const addOutil = async (data) => { await base44.entities.Outil.create(data); await loadAll(); };
+  const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); } catch (e) {} await loadAll(); };
 
   const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
 
@@ -77,6 +86,10 @@ export default function Dashboard() {
 
         {view === 'bijoux' && (
           <BijouxView bijoux={bijoux} categories={catBijoux} onAdd={addBijou} onDelete={deleteBijou} />
+        )}
+
+        {view === 'outils' && (
+          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} />
         )}
 
         {view === 'coffre' && (

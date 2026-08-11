@@ -1,0 +1,39 @@
+{
+  "name": "Outil",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    },
+    "reference": {
+      "type": "string"
+    },
+    "categorie": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "prix": {
+      "type": "number"
+    },
+    "quantite": {
+      "type": "number"
+    },
+    "statut": {
+      "type": "string",
+      "enum": [
+        "Disponible",
+        "R\u00e9serv\u00e9",
+        "Vendu"
+      ],
+      "default": "Disponible"
+    },
+    "vendeur": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}

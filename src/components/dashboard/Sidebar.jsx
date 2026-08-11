@@ -1,11 +1,12 @@
 import React from 'react';
-import { LayoutGrid, Box, Gem, Wallet, LogOut } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate }) {
   const items = [
     { id: 'dashboard', icon: LayoutGrid, label: 'Dashboard' },
     { id: 'objets', icon: Box, label: 'Objets' },
     { id: 'bijoux', icon: Gem, label: 'Bijoux' },
+    { id: 'outils', icon: Wrench, label: 'Outils' },
     { id: 'coffre', icon: Wallet, label: 'Coffre' },
   ];
 
