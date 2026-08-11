@@ -20,7 +20,7 @@ import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState('Comptable');
+  const [role, setRole] = useState('Jefe');
   const [currentView, setCurrentView] = useState('dashboard');
   const [movements, setMovements] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -73,7 +73,7 @@ export default function Dashboard() {
   const userName = user?.full_name || 'Fernando Montoya';
 
   const handleAddMovement = async (type, montant, note) => {
-    if (role !== 'Comptable') return;
+    if (role !== 'Jefe') return;
     await base44.entities.Movement.create({ type, montant, note });
     await base44.entities.LogEntry.create({
       action: 'Ajout',
@@ -84,7 +84,7 @@ export default function Dashboard() {
   };
 
   const handleDeleteMovement = async (m) => {
-    if (role !== 'Comptable') return;
+    if (role !== 'Jefe') return;
     await base44.entities.Movement.delete(m.id);
     await base44.entities.LogEntry.create({
       action: 'Suppression',

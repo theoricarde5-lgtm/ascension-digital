@@ -40,8 +40,8 @@ export default function TopNav({ currentView, onViewChange, role, onRoleChange, 
         <select value={role} onChange={(e) => onRoleChange(e.target.value)} title="Simuler le rôle connecté"
           className="rounded-full px-3 py-2 text-xs font-semibold cursor-pointer"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)', color: '#A79FB5' }}>
-          <option value="Comptable">Rôle : Comptable</option>
-          <option value="Employé">Rôle : Employé</option>
+          <option value="Jefe">Rôle : Jefe</option>
+          <option value="Soldat">Rôle : Soldat</option>
         </select>
         <button onClick={onOpenForm} title="Formulaire"
           className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center transition-colors"
