@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Wrench, X, ShoppingCart } from 'lucide-react';
+import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function OutilsView({ outils, categories, onAdd, onDelete, onSell }) {
+export default function OutilsView({ outils, categories, onAdd, onDelete, onSell, movements }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -90,6 +91,8 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
       {sellTarget && (
         <SellModal outil={sellTarget} onClose={() => setSellTarget(null)} onConfirm={(qte, prix) => { onSell?.(sellTarget, qte, prix); setSellTarget(null); }} />
       )}
+
+      <StockHistory movements={movements} />
     </div>
   );
 }

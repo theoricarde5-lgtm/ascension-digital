@@ -125,7 +125,7 @@ export default function Dashboard() {
         )}
 
         {view === 'outils' && (
-          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} />
+          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} movements={movements} />
         )}
 
         {view === 'coffre' && (
