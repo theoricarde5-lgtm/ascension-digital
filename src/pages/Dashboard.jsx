@@ -240,7 +240,7 @@ export default function Dashboard() {
         )}
 
         {view === 'comptes' && (
-          <ComptesView comptes={comptes} onAdd={addCompte} onDelete={deleteCompte} />
+          <ComptesView comptes={comptes} roles={roles} onAdd={addCompte} onDelete={deleteCompte} />
         )}
 
         {view === 'logs' && currentUser?.role === 'Dev' && (

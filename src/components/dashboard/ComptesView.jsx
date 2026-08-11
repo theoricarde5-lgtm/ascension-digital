@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, X, Trash2, User } from 'lucide-react';
 
-export default function ComptesView({ comptes, onAdd, onDelete }) {
+export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -63,13 +63,13 @@ export default function ComptesView({ comptes, onAdd, onDelete }) {
       )}
 
       {modalOpen && (
-        <AddModal onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} />
+        <AddModal roles={roles} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} />
       )}
     </div>
   );
 }
 
-function AddModal({ onClose, onAdd }) {
+function AddModal({ roles, onClose, onAdd }) {
   const [form, setForm] = useState({ nom: '', matricule: '', password: '', role: 'Membre' });
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
@@ -110,8 +110,11 @@ function AddModal({ onClose, onAdd }) {
           <div>
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Rôle</label>
             <select name="role" value={form.role} onChange={handleChange} className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
-              <option value="Membre">Membre</option>
               <option value="Dev">Dev (admin)</option>
+              <option value="Membre">Membre</option>
+              {roles.map(r => (
+                <option key={r.id} value={r.nom}>{r.nom}</option>
+              ))}
             </select>
           </div>
           <div className="flex justify-end gap-2 mt-1">
