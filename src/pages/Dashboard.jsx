@@ -340,7 +340,7 @@ export default function Dashboard() {
         )}
 
         {view === 'calculateur' && (
-          <CalculateurView objets={objets} bijoux={bijoux} categories={catBijoux} onAddBijou={addBijou} />
+          <CalculateurView objets={objets} bijoux={bijoux} categories={catBijoux} catObjets={categories} sources={sources} onAddBijou={addBijou} onAddObjet={addObjet} onAddSource={addSource} />
         )}
       </main>
     </div>

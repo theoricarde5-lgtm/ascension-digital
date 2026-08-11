@@ -1,11 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Calculator, Check, X, Plus } from 'lucide-react';
+import { AddModal as AddObjetModal } from '@/components/dashboard/ObjetsView';
 
-export default function CalculateurView({ objets = [], bijoux = [], categories = [], onAddBijou }) {
+export default function CalculateurView({ objets = [], bijoux = [], categories = [], catObjets = [], sources = [], onAddBijou, onAddObjet, onAddSource }) {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState({}); // { key: prix }
   const [activeType, setActiveType] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
+  const [objetModalOpen, setObjetModalOpen] = useState(false);
 
   // Build a unified list of objets + bijoux only
   const items = useMemo(() => {
@@ -53,11 +55,18 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
             Cochez les objets, ajustez les prix — le total se calcule automatiquement.
           </p>
         </div>
-        <button onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
-          style={{ background: 'var(--montoya-accent)' }}>
-          <Plus size={16} /> Ajouter un bijou
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setObjetModalOpen(true)}
+            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
+            style={{ background: '#1a1a1a', color: '#ccc', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Plus size={16} /> Ajouter un objet
+          </button>
+          <button onClick={() => setModalOpen(true)}
+            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
+            style={{ background: 'var(--montoya-accent)' }}>
+            <Plus size={16} /> Ajouter un bijou
+          </button>
+        </div>
       </div>
 
       {/* Total card */}
@@ -153,6 +162,10 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
 
       {modalOpen && (
         <AddBijouModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAddBijou?.(data); setModalOpen(false); }} />
+      )}
+
+      {objetModalOpen && (
+        <AddObjetModal categories={catObjets} sources={sources} onAddSource={onAddSource} onClose={() => setObjetModalOpen(false)} onAdd={(data) => { onAddObjet?.(data); setObjetModalOpen(false); }} title="Ajouter un objet" />
       )}
     </div>
   );
