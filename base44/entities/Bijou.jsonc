@@ -16,6 +16,9 @@
     },
     "quantite": {
       "type": "number"
+    },
+    "vendeur": {
+      "type": "string"
     }
   },
   "required": [

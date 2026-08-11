@@ -323,7 +323,7 @@ export default function Dashboard() {
         )}
 
         {view === 'bijoux' && (
-          <BijouxView bijoux={bijoux} categories={catBijoux} onAdd={addBijou} onDelete={deleteBijou} movements={movements} />
+          <BijouxView bijoux={bijoux} categories={catBijoux} sources={sources} onAddSource={addSource} onAdd={addBijou} onDelete={deleteBijou} movements={movements} />
         )}
 
         {view === 'outils' && (

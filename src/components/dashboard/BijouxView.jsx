@@ -3,7 +3,7 @@ import { Search, Plus, Gem, X } from 'lucide-react';
 import { AddModal } from '@/components/dashboard/ObjetsView';
 import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function BijouxView({ bijoux, categories, onAdd, onDelete, movements }) {
+export default function BijouxView({ bijoux, categories, sources, onAddSource, onAdd, onDelete, movements }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -69,6 +69,7 @@ export default function BijouxView({ bijoux, categories, onAdd, onDelete, moveme
               <div className="text-[10.5px] font-bold uppercase tracking-wider mb-1.5 pr-8" style={{ color: '#808080' }}>{b.categorie || 'Sans catégorie'}</div>
               <div className="text-[16px] font-semibold text-white mb-1">{b.nom}</div>
               {b.description && <div className="text-[12.5px] leading-snug mb-3" style={{ color: '#808080' }}>{b.description}</div>}
+              {b.vendeur && <div className="text-[11.5px] mt-2 flex items-center gap-1.5" style={{ color: '#808080' }}><span style={{ color: '#666' }}>Racheté à :</span> {b.vendeur}</div>}
               <div className="flex items-center justify-between mt-3">
                 <div className="text-[15px] font-bold text-white">{b.prix ? `${b.prix} $` : '—'}</div>
                 {b.quantite ? <div className="text-[11px]" style={{ color: '#808080' }}>Qté : {b.quantite}</div> : null}
@@ -79,7 +80,7 @@ export default function BijouxView({ bijoux, categories, onAdd, onDelete, moveme
       )}
 
       {modalOpen && (
-        <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un bijou" />
+        <AddModal categories={categories} sources={sources} onAddSource={onAddSource} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un bijou" />
       )}
 
       <StockHistory movements={movements} keyword="bijou" title="Historique des bijoux" subtitle="Tous les ajouts de bijoux au registre" />
