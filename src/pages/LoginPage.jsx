@@ -145,7 +145,7 @@ export default function LoginPage() {
                   <div className="relative w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0 overflow-hidden"
                     style={{ background: u.photo ? '#141417' : `linear-gradient(135deg, ${accent}, ${grad})` }}>
                     {u.photo
-                      ? <Image src={u.photo} fittingType="fill" quality={100} className="w-full h-full" />
+                      ? <Image src={u.photo} fittingType="fit" quality={100} className="w-full h-full" />
                       : initials(u.nom)}
                   </div>
                   <div className="relative flex-1 min-w-0 text-left">

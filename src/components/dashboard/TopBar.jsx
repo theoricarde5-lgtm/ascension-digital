@@ -35,7 +35,7 @@ export default function TopBar({ query, setQuery }) {
           <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white overflow-hidden"
             style={{ background: user?.couleur || '#ff5722' }}>
             {user?.photo
-              ? <Image src={user.photo} fittingType="fill" quality={100} className="w-full h-full" />
+              ? <Image src={user.photo} fittingType="fit" quality={100} className="w-full h-full" />
               : initials(user?.nom)}
           </div>
           <div className="hidden sm:block leading-tight">

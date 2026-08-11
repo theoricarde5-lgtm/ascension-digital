@@ -130,7 +130,7 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
               <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white text-[16px] overflow-hidden relative"
                 style={{ background: couleur }}>
                 {photo
-                  ? <Image src={photo} fittingType="fill" quality={100} className="w-full h-full" />
+                  ? <Image src={photo} fittingType="fit" quality={100} className="w-full h-full" />
                   : initials(currentUser?.nom)}
               </div>
               <div>
@@ -152,7 +152,7 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
                 <div className="w-16 h-16 rounded-full flex items-center justify-center font-bold text-white text-[18px] overflow-hidden relative shrink-0"
                   style={{ background: couleur }}>
                   {photo
-                    ? <Image src={photo} fittingType="fill" quality={100} className="w-full h-full" />
+                    ? <Image src={photo} fittingType="fit" quality={100} className="w-full h-full" />
                     : initials(currentUser?.nom)}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
