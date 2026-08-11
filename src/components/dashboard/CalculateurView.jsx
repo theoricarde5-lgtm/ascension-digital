@@ -31,7 +31,7 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
     setSelected(prev => {
       const next = { ...prev };
       if (next[key] !== undefined) delete next[key];
-      else next[key] = { prix: prixDefaut || 0, quantite: Math.max(1, quantiteDefaut || 1) };
+      else next[key] = { prix: prixDefaut || 0, quantite: Math.max(1, quantiteDefaut || 1), vendeur: '' };
       return next;
     });
   };
@@ -42,6 +42,10 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
 
   const setQuantite = (key, value) => {
     setSelected(prev => ({ ...prev, [key]: { ...prev[key], quantite: Math.max(0, parseInt(value) || 0) } }));
+  };
+
+  const setVendeur = (key, value) => {
+    setSelected(prev => ({ ...prev, [key]: { ...prev[key], vendeur: value } }));
   };
 
   const selectedKeys = Object.keys(selected);
@@ -55,12 +59,12 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
     const details = selectedKeys.map(k => {
       const it = items.find(i => i.key === k);
       const s = selected[k];
-      return `${it?.nom || k} (x${s.quantite} @ ${s.prix}$)`;
+      return `${it?.nom || k} (x${s.quantite} @ ${s.prix}$${s.vendeur ? ` → ${s.vendeur}` : ''})`;
     }).join(' · ');
     onValidate?.({ total, count, details, items: selectedKeys.map(k => {
       const it = items.find(i => i.key === k);
       const s = selected[k];
-      return { nom: it?.nom, type: it?.type, prix: s.prix, quantite: s.quantite, sousTotal: s.prix * s.quantite };
+      return { nom: it?.nom, type: it?.type, prix: s.prix, quantite: s.quantite, vendeur: s.vendeur, sousTotal: s.prix * s.quantite };
     }) });
     setSelected({});
   };
@@ -170,19 +174,30 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
                   </div>
                 </div>
                 {isChecked && (
-                  <div className="mt-3 grid grid-cols-2 gap-2 pl-9">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px]" style={{ color: '#808080' }}>Prix</span>
-                      <input type="number" value={selected[it.key].prix} onChange={(e) => setPrice(it.key, e.target.value)}
-                        className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
-                        style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
-                      <span className="text-[12px] font-semibold" style={{ color: '#fff' }}>$</span>
+                  <div className="mt-3 pl-9 space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px]" style={{ color: '#808080' }}>Prix</span>
+                        <input type="number" value={selected[it.key].prix} onChange={(e) => setPrice(it.key, e.target.value)}
+                          className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
+                          style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+                        <span className="text-[12px] font-semibold" style={{ color: '#fff' }}>$</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px]" style={{ color: '#808080' }}>Qté</span>
+                        <input type="number" min="0" value={selected[it.key].quantite} onChange={(e) => setQuantite(it.key, e.target.value)}
+                          className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
+                          style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px]" style={{ color: '#808080' }}>Qté</span>
-                      <input type="number" min="0" value={selected[it.key].quantite} onChange={(e) => setQuantite(it.key, e.target.value)}
+                      <span className="text-[11px]" style={{ color: '#808080' }}>Racheté à</span>
+                      <select value={selected[it.key].vendeur} onChange={(e) => setVendeur(it.key, e.target.value)}
                         className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
-                        style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+                        style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }}>
+                        <option value="">— Choisir —</option>
+                        {sources.map(s => <option key={s.id} value={s.nom}>{s.nom}</option>)}
+                      </select>
                     </div>
                   </div>
                 )}
