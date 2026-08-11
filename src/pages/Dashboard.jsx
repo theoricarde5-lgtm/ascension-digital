@@ -157,7 +157,7 @@ export default function Dashboard() {
       <div className="fixed -top-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full pointer-events-none z-0"
         style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)', opacity: 0.14, filter: 'blur(120px)' }} />
 
-      <div className="relative z-10 max-w-[1180px] mx-auto px-7 pb-[60px]">
+      <div className="relative z-10 max-w-[1180px] mx-auto px-7 pb-[60px] text-center">
         <TopNav
           currentView={currentView} onViewChange={setCurrentView}
           role={role} onRoleChange={setRole}
