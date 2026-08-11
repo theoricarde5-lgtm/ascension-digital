@@ -1,7 +1,7 @@
 import React from 'react';
 import { LogOut, Edit3 } from 'lucide-react';
 
-export default function TopNav({ currentView, onViewChange, role, onRoleChange, user, onOpenForm, onLogout }) {
+export default function TopNav({ currentView, onViewChange, role, isAdmin, user, onOpenForm, onLogout }) {
   const pills = [
     { id: 'dashboard', label: 'Espace personnel' },
     { id: 'objets', label: 'Objet' },
@@ -13,6 +13,7 @@ export default function TopNav({ currentView, onViewChange, role, onRoleChange, 
     { id: 'requests', label: 'Demandes' },
     { id: 'logs', label: 'Logs' },
     { id: 'announcements', label: 'Annonces' },
+    ...(isAdmin ? [{ id: 'users', label: 'Utilisateurs' }] : []),
   ];
 
   return (
@@ -37,12 +38,6 @@ export default function TopNav({ currentView, onViewChange, role, onRoleChange, 
       </div>
 
       <div className="flex items-center gap-2.5">
-        <select value={role} onChange={(e) => onRoleChange(e.target.value)} title="Simuler le rôle connecté"
-          className="rounded-full px-3 py-2 text-xs font-semibold cursor-pointer"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)', color: '#A79FB5' }}>
-          <option value="Jefe">Rôle : Jefe</option>
-          <option value="Soldat">Rôle : Soldat</option>
-        </select>
         <button onClick={onOpenForm} title="Formulaire"
           className="w-[38px] h-[38px] rounded-[11px] flex items-center justify-center transition-colors"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)', color: '#A79FB5' }}>

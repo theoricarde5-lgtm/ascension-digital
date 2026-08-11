@@ -16,12 +16,14 @@ import CategoriesView from '@/components/dashboard/CategoriesView';
 import BijouxView from '@/components/dashboard/BijouxView';
 import BijouxInventoryView from '@/components/dashboard/BijouxInventoryView';
 import BijouxCategoriesView from '@/components/dashboard/BijouxCategoriesView';
+import UsersView from '@/components/dashboard/UsersView';
 import PinGate from '@/components/dashboard/PinGate';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState('Jefe');
+  const [role, setRole] = useState('Soldat');
+  const [users, setUsers] = useState([]);
   const [currentView, setCurrentView] = useState('dashboard');
   const [movements, setMovements] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -65,8 +67,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      try { const me = await base44.auth.me(); setUser(me); } catch (e) { /* non connecté */ }
+      try {
+        const me = await base44.auth.me();
+        setUser(me);
+        setRole(me.coffre_role || 'Soldat');
+      } catch (e) { /* non connecté */ }
       try { await loadData(); } catch (e) { /* ignore */ }
+      try {
+        const us = await base44.entities.User.list('-created_date');
+        setUsers(us);
+      } catch (e) { /* non admin */ }
       setLoading(false);
     })();
   }, [loadData]);
@@ -136,6 +146,13 @@ export default function Dashboard() {
     await loadData();
   };
 
+  const handleUpdateUserRole = async (u, coffre_role) => {
+    await base44.entities.User.update(u.id, { coffre_role });
+    const us = await base44.entities.User.list('-created_date');
+    setUsers(us);
+    if (u.id === user?.id) setRole(coffre_role);
+  };
+
   const handleLogout = async () => {
     await base44.auth.logout();
   };
@@ -165,7 +182,8 @@ export default function Dashboard() {
       <div className="relative z-10 max-w-[1180px] mx-auto px-7 pb-[60px] text-center">
         <TopNav
           currentView={currentView} onViewChange={setCurrentView}
-          role={role} onRoleChange={setRole}
+          role={role}
+          isAdmin={user?.role === 'admin'}
           user={user} onOpenForm={() => setModalOpen(true)} onLogout={handleLogout}
         />
 
@@ -197,6 +215,8 @@ export default function Dashboard() {
         {currentView === 'requests' && <RequestsView requests={requests} />}
 
         {currentView === 'announcements' && <AnnouncementsView announcements={announcements} />}
+
+        {currentView === 'users' && <UsersView users={users} currentUser={user} onUpdateRole={handleUpdateUserRole} />}
       </div>
 
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />

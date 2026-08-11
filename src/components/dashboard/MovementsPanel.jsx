@@ -23,7 +23,7 @@ export default function MovementsPanel({ role, movements, onAdd, onDelete }) {
       {!isComptable && (
         <div className="text-[12.5px] mb-4 px-3.5 py-3 rounded-[11px]"
           style={{ color: '#6C6479', background: 'rgba(255,255,255,0.07)', border: '1px dashed rgba(255,255,255,0.10)' }}>
-          🔒 Seul le rôle <b>Comptable</b> peut ajouter ou supprimer un mouvement. Tu es en lecture seule.
+          🔒 Seul le rôle <b>Jefe</b> peut ajouter ou supprimer un mouvement. Tu es en lecture seule.
         </div>
       )}
 

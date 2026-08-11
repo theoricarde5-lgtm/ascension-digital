@@ -7,6 +7,15 @@
         "admin",
         "user"
       ]
+    },
+    "coffre_role": {
+      "type": "string",
+      "description": "R\u00f4le dans la comptabilit\u00e9 du coffre",
+      "enum": [
+        "Jefe",
+        "Soldat"
+      ],
+      "default": "Soldat"
     }
   },
   "required": [
