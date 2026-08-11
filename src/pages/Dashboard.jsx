@@ -247,11 +247,11 @@ export default function Dashboard() {
   const validateCalculateur = useCallback(async ({ total, count, details }) => {
     try {
       await base44.entities.Movement.create({
-        type: 'depot',
+        type: 'retrait',
         montant: total,
         note: `Calcul validé : ${count} objet${count > 1 ? 's' : ''} — ${details}`
       });
-      await logAction('Calcul validé', `${count} objet${count > 1 ? 's' : ''} — ${total}€`);
+      await logAction('Calcul validé (débit coffre)', `${count} objet${count > 1 ? 's' : ''} — ${total}€`);
     } catch (e) {}
     await loadAll();
   }, [logAction, loadAll]);
