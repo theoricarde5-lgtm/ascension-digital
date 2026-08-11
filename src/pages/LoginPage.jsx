@@ -112,25 +112,47 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="text-[12.5px] mt-8 text-center" style={{ color: '#5a5a5f' }}>
-            Clique sur ta tête pour remplir ton matricule
+          <div className="flex items-center gap-3 mt-8">
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <div className="text-[11px] font-medium tracking-wide uppercase" style={{ color: '#5a5a5f' }}>Sélection rapide</div>
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
           </div>
 
-          <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {USERS.map(u => (
-              <button key={u.matricule} type="button" onClick={() => setMatricule(u.matricule)}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all"
-                style={matricule === u.matricule
-                  ? { background: 'rgba(255,71,58,0.1)', border: '1px solid #ff473a' }
-                  : { background: '#141417', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-white text-[16px]"
-                  style={{ background: 'linear-gradient(135deg, #ff473a, #ff7a4d)' }}>
-                  {initials(u.nom)}
-                </div>
-                <div className="text-[12.5px] font-semibold text-white text-center leading-tight">{u.nom}</div>
-                <div className="text-[10.5px]" style={{ color: '#7a7a7f' }}>{u.role}</div>
-              </button>
-            ))}
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            {USERS.map(u => {
+              const selected = matricule === u.matricule;
+              const isDev = u.role === 'Dev';
+              const accent = isDev ? '#9c27b0' : '#ff473a';
+              return (
+                <button key={u.matricule} type="button" onClick={() => setMatricule(u.matricule)}
+                  className="group relative flex items-center gap-3 p-3.5 rounded-2xl transition-all overflow-hidden"
+                  style={selected
+                    ? { background: 'rgba(255,255,255,0.04)', border: `1px solid ${accent}`, boxShadow: `0 0 0 1px ${accent}22` }
+                    : { background: '#141417', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ background: `radial-gradient(circle at top right, ${accent}14, transparent 60%)` }} />
+                  <div className="relative w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0"
+                    style={{ background: `linear-gradient(135deg, ${accent}, ${isDev ? '#b561d4' : '#ff7a4d'})` }}>
+                    {initials(u.nom)}
+                  </div>
+                  <div className="relative flex-1 min-w-0 text-left">
+                    <div className="text-[13.5px] font-semibold text-white truncate">{u.nom}</div>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                        style={{ background: `${accent}1f`, color: accent }}>
+                        {isDev ? '◆' : '●'} {u.role}
+                      </span>
+                    </div>
+                  </div>
+                  {selected && (
+                    <div className="relative w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                      style={{ background: accent }}>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
