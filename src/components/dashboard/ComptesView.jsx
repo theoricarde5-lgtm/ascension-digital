@@ -51,7 +51,7 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px] overflow-hidden"
                     style={{ background: c.photo ? '#1c1c1c' : `linear-gradient(135deg, ${accent}, ${grad})` }}>
                     {c.photo
-                      ? <Image src={c.photo} fittingType="fill" className="w-full h-full" />
+                      ? <Image src={c.photo} fittingType="fill" quality={100} className="w-full h-full" />
                       : c.nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
