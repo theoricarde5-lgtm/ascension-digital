@@ -48,9 +48,29 @@ export default function Dashboard() {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  const addObjet = async (data) => { await base44.entities.Objet.create(data); await loadAll(); };
+  const addObjet = async (data) => {
+    await base44.entities.Objet.create(data);
+    try {
+      await base44.entities.Movement.create({
+        type: 'retrait',
+        montant: (data.prix || 0) * (data.quantite || 0),
+        note: `Achat objet : ${data.nom}${data.categorie ? ` (${data.categorie})` : ''}`
+      });
+    } catch (e) {}
+    await loadAll();
+  };
   const deleteObjet = async (o) => { try { await base44.entities.Objet.delete(o.id); } catch (e) {} await loadAll(); };
-  const addBijou = async (data) => { await base44.entities.Bijou.create(data); await loadAll(); };
+  const addBijou = async (data) => {
+    await base44.entities.Bijou.create(data);
+    try {
+      await base44.entities.Movement.create({
+        type: 'retrait',
+        montant: (data.prix || 0) * (data.quantite || 0),
+        note: `Achat bijou : ${data.nom}${data.categorie ? ` (${data.categorie})` : ''}`
+      });
+    } catch (e) {}
+    await loadAll();
+  };
   const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); } catch (e) {} await loadAll(); };
   const addMovement = async (data) => { await base44.entities.Movement.create(data); await loadAll(); };
   const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
@@ -117,11 +137,11 @@ export default function Dashboard() {
         )}
 
         {view === 'objets' && (
-          <ObjetsView objets={objets} categories={categories} onAdd={addObjet} onDelete={deleteObjet} />
+          <ObjetsView objets={objets} categories={categories} onAdd={addObjet} onDelete={deleteObjet} movements={movements} />
         )}
 
         {view === 'bijoux' && (
-          <BijouxView bijoux={bijoux} categories={catBijoux} onAdd={addBijou} onDelete={deleteBijou} />
+          <BijouxView bijoux={bijoux} categories={catBijoux} onAdd={addBijou} onDelete={deleteBijou} movements={movements} />
         )}
 
         {view === 'outils' && (

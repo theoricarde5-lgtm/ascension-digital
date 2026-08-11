@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Package, X } from 'lucide-react';
+import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
+export default function ObjetsView({ objets, categories, onAdd, onDelete, movements }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -80,6 +81,8 @@ export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
       {modalOpen && (
         <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un objet" />
       )}
+
+      <StockHistory movements={movements} keyword="objet" title="Historique des objets" subtitle="Tous les ajouts d'objets au registre" />
     </div>
   );
 }

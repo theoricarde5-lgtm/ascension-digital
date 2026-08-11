@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Gem, X } from 'lucide-react';
 import { AddModal } from '@/components/dashboard/ObjetsView';
+import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function BijouxView({ bijoux, categories, onAdd, onDelete }) {
+export default function BijouxView({ bijoux, categories, onAdd, onDelete, movements }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -80,6 +81,8 @@ export default function BijouxView({ bijoux, categories, onAdd, onDelete }) {
       {modalOpen && (
         <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un bijou" />
       )}
+
+      <StockHistory movements={movements} keyword="bijou" title="Historique des bijoux" subtitle="Tous les ajouts de bijoux au registre" />
     </div>
   );
 }

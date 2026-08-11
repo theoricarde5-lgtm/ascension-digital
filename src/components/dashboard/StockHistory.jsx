@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { ArrowDownLeft, ArrowUpRight, History } from 'lucide-react';
 
-export default function StockHistory({ movements }) {
+export default function StockHistory({ movements, keyword = 'outil', title = 'Historique du stock', subtitle = 'Tous les ajouts et ventes du stock d\'outils' }) {
   const history = useMemo(() => {
     return (movements || [])
-      .filter(m => (m.note || '').toLowerCase().includes('outil'))
+      .filter(m => (m.note || '').toLowerCase().includes(keyword.toLowerCase()))
       .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-  }, [movements]);
+  }, [movements, keyword]);
 
   return (
     <div className="mt-8 rounded-2xl p-5" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -15,8 +15,8 @@ export default function StockHistory({ movements }) {
           <History size={18} />
         </div>
         <div>
-          <h3 className="text-[16px] font-semibold text-white">Historique du stock</h3>
-          <p className="text-[12px]" style={{ color: '#808080' }}>Tous les ajouts et ventes du stock d'outils</p>
+          <h3 className="text-[16px] font-semibold text-white">{title}</h3>
+          <p className="text-[12px]" style={{ color: '#808080' }}>{subtitle}</p>
         </div>
       </div>
 
