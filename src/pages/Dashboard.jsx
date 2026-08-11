@@ -46,26 +46,28 @@ export default function Dashboard() {
   };
 
   const loadData = useCallback(async () => {
-    const [mv, lg, an, reqs, objs, cats, bjx, catBjx] = await Promise.all([
-      base44.entities.Movement.list('-created_date'),
-      base44.entities.LogEntry.list('-created_date'),
-      base44.entities.Announcement.list('-created_date'),
-      base44.entities.Request.list('-created_date'),
-      base44.entities.Objet.list('-created_date'),
-      base44.entities.Categorie.list('-created_date'),
-      base44.entities.Bijou.list('-created_date'),
-      base44.entities.CategorieBijou.list('-created_date'),
-    ]);
+    const mv = await base44.entities.Movement.list('-created_date');
     setMovements(mv);
+    const lg = await base44.entities.LogEntry.list('-created_date');
     setLogs(lg);
+    const an = await base44.entities.Announcement.list('-created_date');
     setAnnouncements(an);
     setAnnouncement(an[0] || null);
+    const reqs = await base44.entities.Request.list('-created_date');
     setRequests(reqs);
+    const objs = await base44.entities.Objet.list('-created_date');
     setObjets(objs);
+    const cats = await base44.entities.Categorie.list('-created_date');
     setCategories(cats);
+    const bjx = await base44.entities.Bijou.list('-created_date');
     setBijoux(bjx);
+    const catBjx = await base44.entities.CategorieBijou.list('-created_date');
     setCategorieBijoux(catBjx);
 
+    await loadPermissions();
+  }, []);
+
+  const loadPermissions = useCallback(async () => {
     let perms = await base44.entities.Permission.list('-created_date');
     const existingRoles = perms.map(p => p.role);
     const defaults = [
@@ -170,7 +172,7 @@ export default function Dashboard() {
 
   const handleUpdatePermission = async (perm, key, value) => {
     await base44.entities.Permission.update(perm.id, { [key]: value });
-    await loadData();
+    await loadPermissions();
   };
 
   const can = (key) => {
