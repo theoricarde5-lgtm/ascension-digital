@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, ArrowRight } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 import { base44 } from '@/api/base44Client';
 
 const USERS = [
@@ -41,7 +42,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex" style={{ background: '#0a0a0c' }}>
       {/* Left visual panel */}
       <div className="hidden lg:flex flex-col justify-between w-[44%] relative overflow-hidden p-12"
-        style={{ background: 'linear-gradient(160deg, #1a0d0a 0%, #0a0a0c 60%)' }}>
+        style={{ background: '#0a0a0c' }}>
+        <Image src="https://media.base44.com/images/public/6a78e21367f0139109c57ae6/8986f0f76_image.png"
+          fittingType="fill" className="absolute inset-0 w-full h-full" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(26,13,10,0.82) 0%, rgba(10,10,12,0.88) 60%)' }} />
         <div className="absolute -top-32 -right-24 w-[420px] h-[420px] rounded-full opacity-30 blur-3xl"
           style={{ background: 'radial-gradient(circle, #ff473a 0%, transparent 70%)' }} />
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full opacity-20 blur-3xl"
