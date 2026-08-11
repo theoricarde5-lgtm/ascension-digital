@@ -1,0 +1,47 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create",
+        "delete"
+      ],
+      "entity_name": "Outil"
+    }
+  },
+  "name": "Outil Coffre Webhook",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "outil_coffre_webhook",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "record_movement": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "outilMovementWebhook",
+            "args": {
+              "event_type": "${ .trigger.event_type }",
+              "outil": {
+                "nom": "${ .trigger.data.nom }",
+                "categorie": "${ .trigger.data.categorie }",
+                "prix": "${ .trigger.data.prix }",
+                "quantite": "${ .trigger.data.quantite }"
+              }
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Enregistrer mouvement Coffre",
+            "description": "Cree un mouvement depot/retrait"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Enregistre un mouvement dans le Coffre quand un outil est ajoute ou supprime"
+}
