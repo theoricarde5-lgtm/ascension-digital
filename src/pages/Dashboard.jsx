@@ -56,9 +56,11 @@ export default function Dashboard() {
   const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
   const addOutil = async (data) => { await base44.entities.Outil.create(data); await loadAll(); };
   const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); } catch (e) {} await loadAll(); };
-  const sellOutil = async (o) => {
-    const newQte = Math.max(0, (o.quantite || 0) - 1);
+  const sellOutil = async (o, qte, prix) => {
+    const qty = Math.max(1, parseInt(qte) || 1);
+    const newQte = Math.max(0, (o.quantite || 0) - qty);
     const isLast = newQte === 0;
+    const salePrice = parseFloat(prix) || 0;
     try {
       await base44.entities.Outil.update(o.id, {
         quantite: newQte,
@@ -66,8 +68,8 @@ export default function Dashboard() {
       });
       await base44.entities.Movement.create({
         type: 'depot',
-        montant: o.prix || 0,
-        note: `Vente outil : ${o.nom}`
+        montant: salePrice * qty,
+        note: `Vente outil : ${o.nom} (x${qty})`
       });
     } catch (e) {}
     await loadAll();

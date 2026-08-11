@@ -5,6 +5,7 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
+  const [sellTarget, setSellTarget] = useState(null);
 
   const totalUnits = outils.reduce((s, o) => s + (o.quantite || 0), 0);
 
@@ -72,10 +73,10 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
                 <div className="text-[15px] font-bold text-white">{o.prix ? `${o.prix} $` : '—'}</div>
                 {o.quantite ? <div className="text-[11px]" style={{ color: '#808080' }}>Qté : {o.quantite}</div> : null}
               </div>
-              <button onClick={() => onSell?.(o)} disabled={!o.quantite}
+              <button onClick={() => setSellTarget(o)} disabled={!o.quantite}
                 className="mt-3 w-full flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold transition-colors disabled:opacity-40"
                 style={{ background: (o.quantite && o.statut !== 'Vendu') ? '#1a1a1a' : '#161616', color: (o.quantite && o.statut !== 'Vendu') ? '#ff7a4d' : '#666', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <ShoppingCart size={14} /> {o.statut === 'Vendu' && (!o.quantite) ? 'Épuisé' : 'Vendre 1 unité'}
+                <ShoppingCart size={14} /> {o.statut === 'Vendu' && (!o.quantite) ? 'Épuisé' : 'Vendre'}
               </button>
             </div>
           ))}
@@ -85,6 +86,58 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
       {modalOpen && (
         <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un outil" />
       )}
+
+      {sellTarget && (
+        <SellModal outil={sellTarget} onClose={() => setSellTarget(null)} onConfirm={(qte, prix) => { onSell?.(sellTarget, qte, prix); setSellTarget(null); }} />
+      )}
+    </div>
+  );
+}
+
+function SellModal({ outil, onClose, onConfirm }) {
+  const [qte, setQte] = useState(1);
+  const [prix, setPrix] = useState(outil.prix || '');
+  const max = outil.quantite || 0;
+  const total = (parseFloat(prix) || 0) * (parseInt(qte) || 0);
+  const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const qty = Math.min(Math.max(1, parseInt(qte) || 1), max);
+    onConfirm(qty, parseFloat(prix) || 0);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div className="w-full max-w-[440px] rounded-2xl p-6" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h3 className="text-[17px] font-semibold text-white">Vendre — {outil.nom}</h3>
+            <p className="text-[12px] mt-0.5" style={{ color: '#808080' }}>Stock disponible : {max}</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#808080', background: '#121212' }}><X size={16} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Quantité</label>
+            <input type="number" min="1" max={max} value={qte} onChange={(e) => setQte(e.target.value)} required
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Prix unitaire ($)</label>
+            <input type="number" min="0" step="0.01" value={prix} onChange={(e) => setPrix(e.target.value)} required
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2 rounded-xl px-4 py-3 flex items-center justify-between" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <span className="text-[12px]" style={{ color: '#808080' }}>Total de la vente</span>
+            <span className="text-[15px] font-bold text-white">{total} $</span>
+          </div>
+          <div className="col-span-2 flex justify-end gap-2 mt-1">
+            <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
+            <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: '#ff5722' }}>Confirmer la vente</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
