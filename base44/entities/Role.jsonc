@@ -1,0 +1,19 @@
+{
+  "name": "Role",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}

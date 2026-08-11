@@ -9,6 +9,7 @@ import ObjetsView from '@/components/dashboard/ObjetsView';
 import BijouxView from '@/components/dashboard/BijouxView';
 import CoffreView from '@/components/dashboard/CoffreView';
 import OutilsView from '@/components/dashboard/OutilsView';
+import PermissionsView from '@/components/dashboard/PermissionsView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -21,11 +22,20 @@ export default function Dashboard() {
   const [movements, setMovements] = useState([]);
   const [outils, setOutils] = useState([]);
   const [catOutils, setCatOutils] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('ls_user');
+      if (raw) setCurrentUser(JSON.parse(raw));
+    } catch (e) {}
+  }, []);
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
@@ -33,6 +43,7 @@ export default function Dashboard() {
         base44.entities.Movement.list('-created_date', 50),
         base44.entities.Outil.list('-created_date', 50),
         base44.entities.CategorieOutil.list(),
+        base44.entities.Role.list('-created_date', 50),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -41,6 +52,7 @@ export default function Dashboard() {
       setMovements(mv);
       setOutils(ou);
       setCatOutils(co);
+      setRoles(rl);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -72,9 +84,14 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Categorie, setCategories),
       subscribeEntity(base44.entities.CategorieBijou, setCatBijoux),
       subscribeEntity(base44.entities.CategorieOutil, setCatOutils),
+      subscribeEntity(base44.entities.Role, setRoles),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
+
+  const addRole = async (data) => { await base44.entities.Role.create(data); await loadAll(); };
+  const updateRole = async (id, data) => { try { await base44.entities.Role.update(id, data); } catch (e) {} await loadAll(); };
+  const deleteRole = async (r) => { try { await base44.entities.Role.delete(r.id); } catch (e) {} await loadAll(); };
 
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
@@ -143,7 +160,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen" style={{ background: '#121212' }}>
-      <Sidebar active={view} onNavigate={setView} />
+      <Sidebar active={view} onNavigate={setView} userRole={currentUser?.role} />
       <main className="ml-[72px] px-6 lg:px-10 py-6">
         <TopBar query={query} setQuery={setQuery} />
 
@@ -178,6 +195,10 @@ export default function Dashboard() {
 
         {view === 'coffre' && (
           <CoffreView movements={movements} onAdd={addMovement} onDelete={deleteMovement} />
+        )}
+
+        {view === 'permissions' && (
+          <PermissionsView roles={roles} onAdd={addRole} onUpdate={updateRole} onDelete={deleteRole} />
         )}
       </main>
     </div>
