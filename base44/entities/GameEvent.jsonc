@@ -1,0 +1,25 @@
+{
+  "name": "GameEvent",
+  "type": "object",
+  "properties": {
+    "jeu": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "joueur": {
+      "type": "string"
+    },
+    "score": {
+      "type": "number"
+    },
+    "donnees": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "jeu",
+    "event_type"
+  ]
+}
