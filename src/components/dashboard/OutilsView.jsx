@@ -21,7 +21,7 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
     <div>
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-[26px] font-bold text-white tracking-tight">Stock</h1>
+          <h1 className="text-[26px] font-bold text-white tracking-tight">Stock Outils</h1>
           <p className="text-[13.5px] mt-1" style={{ color: '#808080' }}>
             {outils.length} article{outils.length > 1 ? 's' : ''} · {totalUnits} unité{totalUnits > 1 ? 's' : ''} au total
           </p>

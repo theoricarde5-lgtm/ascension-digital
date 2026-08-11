@@ -54,7 +54,23 @@ export default function Dashboard() {
   const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); } catch (e) {} await loadAll(); };
   const addMovement = async (data) => { await base44.entities.Movement.create(data); await loadAll(); };
   const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
-  const addOutil = async (data) => { await base44.entities.Outil.create(data); await loadAll(); };
+  const addOutil = async (data) => {
+    const existing = outils.find(o => o.nom.trim().toLowerCase() === (data.nom || '').trim().toLowerCase());
+    if (existing) {
+      try {
+        await base44.entities.Outil.update(existing.id, {
+          quantite: (existing.quantite || 0) + (data.quantite || 0),
+          prix: data.prix || existing.prix,
+          categorie: data.categorie || existing.categorie,
+          description: data.description || existing.description,
+          vendeur: data.vendeur || existing.vendeur,
+        });
+      } catch (e) {}
+    } else {
+      await base44.entities.Outil.create(data);
+    }
+    await loadAll();
+  };
   const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); } catch (e) {} await loadAll(); };
   const sellOutil = async (o, qte, prix) => {
     const qty = Math.max(1, parseInt(qte) || 1);

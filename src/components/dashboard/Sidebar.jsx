@@ -6,7 +6,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate }) {
     { id: 'dashboard', icon: LayoutGrid, label: 'Dashboard' },
     { id: 'objets', icon: Box, label: 'Objets' },
     { id: 'bijoux', icon: Gem, label: 'Bijoux' },
-    { id: 'outils', icon: Wrench, label: 'Stock' },
+    { id: 'outils', icon: Wrench, label: 'Stock Outils' },
     { id: 'coffre', icon: Wallet, label: 'Coffre' },
   ];
 
