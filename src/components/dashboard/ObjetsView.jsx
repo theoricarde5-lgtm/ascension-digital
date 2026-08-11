@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { fmt } from '@/lib/coffre';
 
-export default function ObjetsView({ objets, onAdd, onDelete }) {
+export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
   const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '' });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,7 +32,12 @@ export default function ObjetsView({ objets, onAdd, onDelete }) {
         className="rounded-[22px] p-[22px] mb-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
         <Field label="Nom *"><input name="nom" value={form.nom} onChange={handleChange} required placeholder="Nom de l'objet" className="w-full rounded-[11px] px-3 py-2.5 text-[13px]" style={inputStyle} /></Field>
-        <Field label="Catégorie"><input name="categorie" value={form.categorie} onChange={handleChange} placeholder="Ex : Moto, Pièce..." className="w-full rounded-[11px] px-3 py-2.5 text-[13px]" style={inputStyle} /></Field>
+        <Field label="Catégorie">
+          <select name="categorie" value={form.categorie} onChange={handleChange} className="w-full rounded-[11px] px-3 py-2.5 text-[13px]" style={inputStyle}>
+            <option value="">— Choisir une catégorie —</option>
+            {categories.map(c => <option key={c.id} value={c.nom}>{c.nom}</option>)}
+          </select>
+        </Field>
         <Field label="Prix ($)"><input name="prix" type="number" value={form.prix} onChange={handleChange} placeholder="0" className="w-full rounded-[11px] px-3 py-2.5 text-[13px]" style={inputStyle} /></Field>
         <Field label="Quantité"><input name="quantite" type="number" value={form.quantite} onChange={handleChange} placeholder="0" className="w-full rounded-[11px] px-3 py-2.5 text-[13px]" style={inputStyle} /></Field>
         <div className="sm:col-span-2 lg:col-span-3">

@@ -12,6 +12,7 @@ import RequestsView from '@/components/dashboard/RequestsView';
 import AnnouncementsView from '@/components/dashboard/AnnouncementsView';
 import ObjetsView from '@/components/dashboard/ObjetsView';
 import InventoryView from '@/components/dashboard/InventoryView';
+import CategoriesView from '@/components/dashboard/CategoriesView';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const [announcements, setAnnouncements] = useState([]);
   const [requests, setRequests] = useState([]);
   const [objets, setObjets] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
   const [loading, setLoading] = useState(true);
@@ -34,12 +36,13 @@ export default function Dashboard() {
   };
 
   const loadData = useCallback(async () => {
-    const [mv, lg, an, reqs, objs] = await Promise.all([
+    const [mv, lg, an, reqs, objs, cats] = await Promise.all([
       base44.entities.Movement.list('-created_date'),
       base44.entities.LogEntry.list('-created_date'),
       base44.entities.Announcement.list('-created_date'),
       base44.entities.Request.list('-created_date'),
       base44.entities.Objet.list('-created_date'),
+      base44.entities.Categorie.list('-created_date'),
     ]);
     setMovements(mv);
     setLogs(lg);
@@ -47,6 +50,7 @@ export default function Dashboard() {
     setAnnouncement(an[0] || null);
     setRequests(reqs);
     setObjets(objs);
+    setCategories(cats);
   }, []);
 
   useEffect(() => {
@@ -96,6 +100,15 @@ export default function Dashboard() {
     await loadData();
   };
 
+  const handleAddCategorie = async (nom) => {
+    await base44.entities.Categorie.create({ nom });
+    await loadData();
+  };
+  const handleDeleteCategorie = async (c) => {
+    await base44.entities.Categorie.delete(c.id);
+    await loadData();
+  };
+
   const handleLogout = async () => {
     await base44.auth.logout();
   };
@@ -138,9 +151,11 @@ export default function Dashboard() {
 
         {currentView === 'logs' && <LogsView logs={logs} />}
 
-        {currentView === 'objets' && <ObjetsView objets={objets} onAdd={handleAddObjet} onDelete={handleDeleteObjet} />}
+        {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} />}
 
         {currentView === 'inventaire' && <InventoryView objets={objets} />}
+
+        {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} />}
 
         {currentView === 'requests' && <RequestsView requests={requests} />}
 
