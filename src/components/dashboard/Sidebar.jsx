@@ -31,7 +31,7 @@ export default function Sidebar({ currentView, onViewChange, role, isAdmin, onLo
             <button key={it.id} title={it.label} onClick={() => onViewChange(it.id)}
             className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
             style={active ? { background: 'rgba(255,87,34,0.12)', color: '#ff5722' } : { color: '#808080' }}>
-              <Icon size={20} className="hidden" />
+              
             </button>);
 
         })}
