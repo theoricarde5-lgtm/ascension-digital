@@ -150,12 +150,6 @@ export default function Dashboard() {
         date_retour: data.date_retour,
         caution: data.caution,
       });
-      const montantDepot = (data.caution || 0) + (data.encaisser_location ? (a.prix_location || 0) : 0);
-      await base44.entities.Movement.create({
-        type: 'depot',
-        montant: montantDepot,
-        note: `Location arme : ${a.nom} → ${data.locataire}${data.encaisser_location ? '' : ' (location non encaissée)'}`
-      });
       await logAction('Location arme', `${a.nom} → ${data.locataire}`);
     } catch (e) {}
     await loadAll();
@@ -168,12 +162,13 @@ export default function Dashboard() {
         date_debut: '',
         date_retour: '',
       });
+      const total = (a.caution || 0) + (a.prix_location || 0);
       await base44.entities.Movement.create({
-        type: 'retrait',
-        montant: a.caution || 0,
-        note: `Retour caution arme : ${a.nom} (${a.locataire || ''})`
+        type: 'depot',
+        montant: total,
+        note: `Retour arme : ${a.nom} (${a.locataire || ''}) — caution ${a.caution || 0}€ + location ${a.prix_location || 0}€`
       });
-      await logAction('Retour arme', `${a.nom} — caution ${a.caution || 0}€ rendue`);
+      await logAction('Retour arme', `${a.nom} — encaissé ${total}€ (caution + location)`);
     } catch (e) {}
     await loadAll();
   };
