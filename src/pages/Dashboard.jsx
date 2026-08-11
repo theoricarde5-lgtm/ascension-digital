@@ -38,6 +38,10 @@ export default function Dashboard() {
     } catch (e) {}
   }, []);
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--montoya-accent', currentUser?.couleur || '#ff5722');
+  }, [currentUser]);
+
   const logAction = useCallback(async (action, details = '') => {
     try {
       const user = currentUser?.nom || 'Inconnu';

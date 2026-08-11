@@ -45,7 +45,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
         {/* Dashboard - top level */}
         <button onClick={() => onNavigate?.('dashboard')} title="Dashboard"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
-          style={active === 'dashboard' ? { background: '#ff5722', color: '#fff' } : { color: '#808080' }}>
+          style={active === 'dashboard' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <LayoutGrid size={20} />
         </button>
 
@@ -56,7 +56,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
         <div className="relative" ref={invRef}>
           <button onClick={() => setOpenInv(o => !o)} title="Inventaire"
             className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
-            style={isInventoryActive || openInv ? { background: '#ff5722', color: '#fff' } : { color: '#808080' }}>
+            style={isInventoryActive || openInv ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
             <Package size={20} />
           </button>
           {openInv && (
@@ -81,7 +81,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
         {/* Coffre - top level */}
         <button onClick={() => onNavigate?.('coffre')} title="Coffre"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
-          style={active === 'coffre' ? { background: '#ff5722', color: '#fff' } : { color: '#808080' }}>
+          style={active === 'coffre' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Wallet size={20} />
         </button>
 
@@ -91,7 +91,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
         {/* Paramètres - visible to all */}
         <button onClick={() => onNavigate?.('parametres')} title="Paramètres"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
-          style={active === 'parametres' ? { background: '#ff5722', color: '#fff' } : { color: '#808080' }}>
+          style={active === 'parametres' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Settings size={20} />
         </button>
 

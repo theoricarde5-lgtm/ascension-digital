@@ -204,7 +204,7 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
             <div className="flex justify-end mt-3">
               <button type="button" onClick={handleSaveProfile} disabled={profileLoading}
                 className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-60"
-                style={{ background: '#ff5722' }}>
+                style={{ background: 'var(--montoya-accent)' }}>
                 {profileLoading ? 'Enregistrement...' : 'Enregistrer le profil'}
               </button>
             </div>
@@ -268,7 +268,7 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
               <div className="flex justify-end">
                 <button type="submit" disabled={pwdLoading}
                   className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-60"
-                  style={{ background: '#ff5722' }}>
+                  style={{ background: 'var(--montoya-accent)' }}>
                   {pwdLoading ? 'Modification...' : 'Modifier le mot de passe'}
                 </button>
               </div>

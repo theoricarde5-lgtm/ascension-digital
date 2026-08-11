@@ -19,7 +19,7 @@ export default function CoffreView({ movements, onAdd, onDelete }) {
         </div>
         <button onClick={() => setModalOpen(true)}
           className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
-          style={{ background: '#ff5722' }}>
+          style={{ background: 'var(--montoya-accent)' }}>
           <Plus size={16} /> Ajouter un mouvement
         </button>
       </div>
