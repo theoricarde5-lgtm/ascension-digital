@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { fmt, initials, dateStr } from '@/lib/coffre';
 
 export default function MovementsPanel({ role, movements, onAdd, onDelete }) {
-  const isComptable = role === 'Comptable';
+  const isComptable = role === 'Jefe';
   const [type, setType] = useState('depot');
   const [montant, setMontant] = useState('');
   const [note, setNote] = useState('');
