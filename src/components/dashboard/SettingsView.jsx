@@ -1,10 +1,44 @@
 import React, { useState } from 'react';
-import { Settings, User, Bell, Palette, Shield, Info } from 'lucide-react';
+import { Settings, User, Bell, Palette, Shield, Info, Lock } from 'lucide-react';
 
-export default function SettingsView({ currentUser }) {
+export default function SettingsView({ currentUser, onChangePassword }) {
   const [notifEmail, setNotifEmail] = useState(true);
   const [notifPush, setNotifPush] = useState(false);
   const [compactMode, setCompactMode] = useState(false);
+  const [pwd, setPwd] = useState({ current: '', next: '', confirm: '' });
+  const [pwdMsg, setPwdMsg] = useState({ type: '', text: '' });
+  const [pwdLoading, setPwdLoading] = useState(false);
+
+  const handlePwdSubmit = async (e) => {
+    e.preventDefault();
+    setPwdMsg({ type: '', text: '' });
+    if (!pwd.current || !pwd.next || !pwd.confirm) {
+      setPwdMsg({ type: 'error', text: 'Tous les champs sont requis.' });
+      return;
+    }
+    if (pwd.next !== pwd.confirm) {
+      setPwdMsg({ type: 'error', text: 'Les nouveaux mots de passe ne correspondent pas.' });
+      return;
+    }
+    if (pwd.next.length < 4) {
+      setPwdMsg({ type: 'error', text: 'Le mot de passe doit faire au moins 4 caractères.' });
+      return;
+    }
+    setPwdLoading(true);
+    try {
+      const res = await onChangePassword(pwd.current, pwd.next);
+      if (res?.ok) {
+        setPwdMsg({ type: 'success', text: 'Mot de passe modifié avec succès.' });
+        setPwd({ current: '', next: '', confirm: '' });
+      } else {
+        setPwdMsg({ type: 'error', text: res?.error || 'Mot de passe actuel incorrect.' });
+      }
+    } catch (err) {
+      setPwdMsg({ type: 'error', text: 'Échec de la modification.' });
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   const Toggle = ({ on, onChange }) => (
     <button onClick={() => onChange(!on)}
@@ -94,6 +128,42 @@ export default function SettingsView({ currentUser }) {
             <Row label="Session" desc="Déconnexion automatique">
               <span className="text-[12px]" style={{ color: '#808080' }}>Manuelle</span>
             </Row>
+          </Section>
+
+          <Section icon={Lock} title="Changer le mot de passe">
+            <form onSubmit={handlePwdSubmit} className="flex flex-col gap-3">
+              <div>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Mot de passe actuel</label>
+                <input type="password" value={pwd.current} onChange={(e) => setPwd({ ...pwd, current: e.target.value })}
+                  className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                  style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Nouveau mot de passe</label>
+                <input type="password" value={pwd.next} onChange={(e) => setPwd({ ...pwd, next: e.target.value })}
+                  className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                  style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Confirmer le nouveau mot de passe</label>
+                <input type="password" value={pwd.confirm} onChange={(e) => setPwd({ ...pwd, confirm: e.target.value })}
+                  className="w-full rounded-xl px-3.5 py-2.5 text-[13px] outline-none"
+                  style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+              </div>
+              {pwdMsg.text && (
+                <div className="text-[12.5px] px-3.5 py-2.5 rounded-lg" style={{
+                  color: pwdMsg.type === 'success' ? '#22c55e' : '#ff7a6a',
+                  background: pwdMsg.type === 'success' ? 'rgba(34,197,94,0.08)' : 'rgba(255,71,58,0.08)'
+                }}>{pwdMsg.text}</div>
+              )}
+              <div className="flex justify-end">
+                <button type="submit" disabled={pwdLoading}
+                  className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white disabled:opacity-60"
+                  style={{ background: '#ff5722' }}>
+                  {pwdLoading ? 'Modification...' : 'Modifier le mot de passe'}
+                </button>
+              </div>
+            </form>
           </Section>
 
           <Section icon={Info} title="À propos">

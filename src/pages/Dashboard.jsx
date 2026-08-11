@@ -180,6 +180,20 @@ export default function Dashboard() {
     await loadAll();
   };
 
+  const changePassword = useCallback(async (currentPwd, newPwd) => {
+    try {
+      const matches = await base44.entities.Compte.filter({ matricule: currentUser?.matricule });
+      const me = matches[0];
+      if (!me) return { ok: false, error: 'Compte introuvable.' };
+      if (me.password !== currentPwd) return { ok: false, error: 'Mot de passe actuel incorrect.' };
+      await base44.entities.Compte.update(me.id, { password: newPwd });
+      await logAction('Changement mot de passe', `Compte ${me.nom} (${me.matricule})`);
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: 'Échec de la modification.' };
+    }
+  }, [currentUser, logAction]);
+
   const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
 
   return (
@@ -234,7 +248,7 @@ export default function Dashboard() {
         )}
 
         {view === 'parametres' && (
-          <SettingsView currentUser={currentUser} />
+          <SettingsView currentUser={currentUser} onChangePassword={changePassword} />
         )}
       </main>
     </div>
