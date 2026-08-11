@@ -56,6 +56,22 @@ export default function Dashboard() {
   const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
   const addOutil = async (data) => { await base44.entities.Outil.create(data); await loadAll(); };
   const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); } catch (e) {} await loadAll(); };
+  const sellOutil = async (o) => {
+    const newQte = Math.max(0, (o.quantite || 0) - 1);
+    const isLast = newQte === 0;
+    try {
+      await base44.entities.Outil.update(o.id, {
+        quantite: newQte,
+        statut: isLast ? 'Vendu' : (o.statut || 'Disponible')
+      });
+      await base44.entities.Movement.create({
+        type: 'depot',
+        montant: o.prix || 0,
+        note: `Vente outil : ${o.nom}`
+      });
+    } catch (e) {}
+    await loadAll();
+  };
 
   const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
 
@@ -89,7 +105,7 @@ export default function Dashboard() {
         )}
 
         {view === 'outils' && (
-          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} />
+          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} />
         )}
 
         {view === 'coffre' && (

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Plus, Wrench, X } from 'lucide-react';
+import { Search, Plus, Wrench, X, ShoppingCart } from 'lucide-react';
 
-export default function OutilsView({ outils, categories, onAdd, onDelete }) {
+export default function OutilsView({ outils, categories, onAdd, onDelete, onSell }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -72,6 +72,11 @@ export default function OutilsView({ outils, categories, onAdd, onDelete }) {
                 <div className="text-[15px] font-bold text-white">{o.prix ? `${o.prix} $` : '—'}</div>
                 {o.quantite ? <div className="text-[11px]" style={{ color: '#808080' }}>Qté : {o.quantite}</div> : null}
               </div>
+              <button onClick={() => onSell?.(o)} disabled={!o.quantite}
+                className="mt-3 w-full flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold transition-colors disabled:opacity-40"
+                style={{ background: (o.quantite && o.statut !== 'Vendu') ? '#1a1a1a' : '#161616', color: (o.quantite && o.statut !== 'Vendu') ? '#ff7a4d' : '#666', border: '1px solid rgba(255,255,255,0.06)' }}>
+                <ShoppingCart size={14} /> {o.statut === 'Vendu' && (!o.quantite) ? 'Épuisé' : 'Vendre 1 unité'}
+              </button>
             </div>
           ))}
         </div>
