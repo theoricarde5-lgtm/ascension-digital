@@ -6,6 +6,7 @@ import StatCards from '@/components/dashboard/StatCards';
 import RecentObjets from '@/components/dashboard/RecentObjets';
 import ObjetsView from '@/components/dashboard/ObjetsView';
 import BijouxView from '@/components/dashboard/BijouxView';
+import CoffreView from '@/components/dashboard/CoffreView';
 
 export default function Dashboard() {
   const [view, setView] = useState('dashboard');
@@ -14,20 +15,23 @@ export default function Dashboard() {
   const [bijoux, setBijoux] = useState([]);
   const [categories, setCategories] = useState([]);
   const [catBijoux, setCatBijoux] = useState([]);
+  const [movements, setMovements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb] = await Promise.all([
+      const [o, b, c, cb, mv] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
         base44.entities.CategorieBijou.list(),
+        base44.entities.Movement.list('-created_date', 50),
       ]);
       setObjets(o);
       setBijoux(b);
       setCategories(c);
       setCatBijoux(cb);
+      setMovements(mv);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -41,6 +45,8 @@ export default function Dashboard() {
   const deleteObjet = async (o) => { await base44.entities.Objet.delete(o.id); await loadAll(); };
   const addBijou = async (data) => { await base44.entities.Bijou.create(data); await loadAll(); };
   const deleteBijou = async (b) => { await base44.entities.Bijou.delete(b.id); await loadAll(); };
+  const addMovement = async (data) => { await base44.entities.Movement.create(data); await loadAll(); };
+  const deleteMovement = async (m) => { await base44.entities.Movement.delete(m.id); await loadAll(); };
 
   const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
 
@@ -74,10 +80,7 @@ export default function Dashboard() {
         )}
 
         {view === 'coffre' && (
-          <div className="rounded-2xl py-20 flex flex-col items-center justify-center text-center"
-            style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="text-[14px]" style={{ color: '#808080' }}>Coffre — à venir.</div>
-          </div>
+          <CoffreView movements={movements} onAdd={addMovement} onDelete={deleteMovement} />
         )}
       </main>
     </div>
