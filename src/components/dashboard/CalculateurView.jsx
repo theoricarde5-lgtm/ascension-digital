@@ -62,7 +62,7 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
         <div className="flex items-center gap-2">
           <button onClick={() => setObjetModalOpen(true)}
             className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
-            style={{ background: '#1a1a1a', color: '#ccc', border: '1px solid rgba(255,255,255,0.08)' }}>
+            style={{ background: 'var(--montoya-accent)' }}>
             <Plus size={16} /> Ajouter un objet
           </button>
           <button onClick={() => setModalOpen(true)}
