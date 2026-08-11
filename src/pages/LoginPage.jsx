@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 
 const USERS = [
   { matricule: 'FERNANDO', nom: 'Fernando', role: 'Dev' },
+  { matricule: 'TEA', nom: 'Téa', role: 'Membre' },
 ];
 
 const initials = (nom) => nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
