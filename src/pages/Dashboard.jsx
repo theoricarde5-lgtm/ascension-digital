@@ -278,7 +278,7 @@ export default function Dashboard() {
         )}
 
         {view === 'groupes' && (
-          <SourcesView sources={sources} />
+          <SourcesView sources={sources} onAdd={addSource} />
         )}
       </main>
     </div>
