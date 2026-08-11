@@ -1,0 +1,24 @@
+{
+  "name": "Bijou",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    },
+    "categorie": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "prix": {
+      "type": "number"
+    },
+    "quantite": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}

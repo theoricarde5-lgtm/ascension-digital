@@ -13,6 +13,9 @@ import AnnouncementsView from '@/components/dashboard/AnnouncementsView';
 import ObjetsView from '@/components/dashboard/ObjetsView';
 import InventoryView from '@/components/dashboard/InventoryView';
 import CategoriesView from '@/components/dashboard/CategoriesView';
+import BijouxView from '@/components/dashboard/BijouxView';
+import BijouxInventoryView from '@/components/dashboard/BijouxInventoryView';
+import BijouxCategoriesView from '@/components/dashboard/BijouxCategoriesView';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -26,6 +29,8 @@ export default function Dashboard() {
   const [requests, setRequests] = useState([]);
   const [objets, setObjets] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [bijoux, setBijoux] = useState([]);
+  const [categorieBijoux, setCategorieBijoux] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
   const [loading, setLoading] = useState(true);
@@ -36,13 +41,15 @@ export default function Dashboard() {
   };
 
   const loadData = useCallback(async () => {
-    const [mv, lg, an, reqs, objs, cats] = await Promise.all([
+    const [mv, lg, an, reqs, objs, cats, bjx, catBjx] = await Promise.all([
       base44.entities.Movement.list('-created_date'),
       base44.entities.LogEntry.list('-created_date'),
       base44.entities.Announcement.list('-created_date'),
       base44.entities.Request.list('-created_date'),
       base44.entities.Objet.list('-created_date'),
       base44.entities.Categorie.list('-created_date'),
+      base44.entities.Bijou.list('-created_date'),
+      base44.entities.CategorieBijou.list('-created_date'),
     ]);
     setMovements(mv);
     setLogs(lg);
@@ -51,6 +58,8 @@ export default function Dashboard() {
     setRequests(reqs);
     setObjets(objs);
     setCategories(cats);
+    setBijoux(bjx);
+    setCategorieBijoux(catBjx);
   }, []);
 
   useEffect(() => {
@@ -109,6 +118,23 @@ export default function Dashboard() {
     await loadData();
   };
 
+  const handleAddBijou = async (data) => {
+    await base44.entities.Bijou.create(data);
+    await loadData();
+  };
+  const handleDeleteBijou = async (b) => {
+    await base44.entities.Bijou.delete(b.id);
+    await loadData();
+  };
+  const handleAddCategorieBijou = async (nom) => {
+    await base44.entities.CategorieBijou.create({ nom });
+    await loadData();
+  };
+  const handleDeleteCategorieBijou = async (c) => {
+    await base44.entities.CategorieBijou.delete(c.id);
+    await loadData();
+  };
+
   const handleLogout = async () => {
     await base44.auth.logout();
   };
@@ -156,6 +182,12 @@ export default function Dashboard() {
         {currentView === 'inventaire' && <InventoryView objets={objets} />}
 
         {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} />}
+
+        {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} />}
+
+        {currentView === 'bijoux-inventaire' && <BijouxInventoryView bijoux={bijoux} />}
+
+        {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} />}
 
         {currentView === 'requests' && <RequestsView requests={requests} />}
 
