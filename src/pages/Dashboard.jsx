@@ -10,6 +10,7 @@ import BijouxView from '@/components/dashboard/BijouxView';
 import CoffreView from '@/components/dashboard/CoffreView';
 import OutilsView from '@/components/dashboard/OutilsView';
 import PermissionsView from '@/components/dashboard/PermissionsView';
+import ComptesView from '@/components/dashboard/ComptesView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [outils, setOutils] = useState([]);
   const [catOutils, setCatOutils] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [comptes, setComptes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -35,7 +37,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
@@ -44,6 +46,7 @@ export default function Dashboard() {
         base44.entities.Outil.list('-created_date', 50),
         base44.entities.CategorieOutil.list(),
         base44.entities.Role.list('-created_date', 50),
+        base44.entities.Compte.list('-created_date', 50),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -53,6 +56,7 @@ export default function Dashboard() {
       setOutils(ou);
       setCatOutils(co);
       setRoles(rl);
+      setComptes(cp);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -85,6 +89,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.CategorieBijou, setCatBijoux),
       subscribeEntity(base44.entities.CategorieOutil, setCatOutils),
       subscribeEntity(base44.entities.Role, setRoles),
+      subscribeEntity(base44.entities.Compte, setComptes),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -92,6 +97,8 @@ export default function Dashboard() {
   const addRole = async (data) => { await base44.entities.Role.create(data); await loadAll(); };
   const updateRole = async (id, data) => { try { await base44.entities.Role.update(id, data); } catch (e) {} await loadAll(); };
   const deleteRole = async (r) => { try { await base44.entities.Role.delete(r.id); } catch (e) {} await loadAll(); };
+  const addCompte = async (data) => { await base44.entities.Compte.create(data); await loadAll(); };
+  const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); } catch (e) {} await loadAll(); };
 
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
@@ -199,6 +206,10 @@ export default function Dashboard() {
 
         {view === 'permissions' && (
           <PermissionsView roles={roles} onAdd={addRole} onUpdate={updateRole} onDelete={deleteRole} />
+        )}
+
+        {view === 'comptes' && (
+          <ComptesView comptes={comptes} onAdd={addCompte} onDelete={deleteCompte} />
         )}
       </main>
     </div>

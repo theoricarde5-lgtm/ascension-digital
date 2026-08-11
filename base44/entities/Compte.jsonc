@@ -1,0 +1,28 @@
+{
+  "name": "Compte",
+  "type": "object",
+  "properties": {
+    "matricule": {
+      "type": "string"
+    },
+    "nom": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "Dev",
+        "Membre"
+      ],
+      "default": "Membre"
+    }
+  },
+  "required": [
+    "matricule",
+    "nom",
+    "password"
+  ]
+}
