@@ -1,0 +1,12 @@
+{
+  "name": "Source",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}

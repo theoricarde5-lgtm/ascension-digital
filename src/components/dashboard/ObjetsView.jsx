@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Plus, Package, X } from 'lucide-react';
 import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function ObjetsView({ objets, categories, onAdd, onDelete, movements }) {
+export default function ObjetsView({ objets, categories, sources, onAdd, onDelete, movements, onAddSource }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -79,7 +79,7 @@ export default function ObjetsView({ objets, categories, onAdd, onDelete, moveme
       )}
 
       {modalOpen && (
-        <AddModal categories={categories} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un objet" />
+        <AddModal categories={categories} sources={sources} onAddSource={onAddSource} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} title="Ajouter un objet" />
       )}
 
       <StockHistory movements={movements} keyword="objet" title="Historique des objets" subtitle="Tous les ajouts d'objets au registre" />
@@ -97,8 +97,10 @@ function Pill({ label, active, onClick }) {
   );
 }
 
-export function AddModal({ categories, onClose, onAdd, title }) {
+export function AddModal({ categories, sources = [], onAddSource, onClose, onAdd, title }) {
   const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '', vendeur: '' });
+  const [newSource, setNewSource] = useState('');
+  const [addingSource, setAddingSource] = useState(false);
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -146,10 +148,20 @@ export function AddModal({ categories, onClose, onAdd, title }) {
           </div>
           <div className="col-span-2">
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Racheté à</label>
-            <select name="vendeur" value={form.vendeur} onChange={handleChange} className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
-              <option value="">— Choisir —</option>
-              {['SBC', 'CBLOCK', 'HTB', 'BLOODLINE', 'CUARDRA', 'MADRAZO'].map(n => <option key={n} value={n}>{n}</option>)}
-            </select>
+            <div className="flex gap-2">
+              <select name="vendeur" value={form.vendeur} onChange={handleChange} className="flex-1 rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
+                <option value="">— Choisir —</option>
+                {sources.map(s => <option key={s.id} value={s.nom}>{s.nom}</option>)}
+              </select>
+              <button type="button" onClick={() => setAddingSource(s => !s)} className="rounded-xl px-3 text-[13px] font-medium whitespace-nowrap" style={{ color: '#fff', background: 'var(--montoya-accent)' }}>+ Groupe</button>
+            </div>
+            {addingSource && (
+              <div className="flex gap-2 mt-2">
+                <input value={newSource} onChange={(e) => setNewSource(e.target.value)} placeholder="Nouveau groupe..."
+                  className="flex-1 rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+                <button type="button" onClick={async () => { if (newSource.trim()) { await onAddSource(newSource); setForm({ ...form, vendeur: newSource.trim() }); setNewSource(''); setAddingSource(false); } }} className="rounded-xl px-3 py-2.5 text-[13px] font-semibold text-white whitespace-nowrap" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
+              </div>
+            )}
           </div>
           <div className="col-span-2">
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Description</label>

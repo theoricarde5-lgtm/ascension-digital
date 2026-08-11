@@ -28,6 +28,7 @@ export default function Dashboard() {
   const [roles, setRoles] = useState([]);
   const [comptes, setComptes] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -51,7 +52,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
@@ -62,6 +63,7 @@ export default function Dashboard() {
         base44.entities.Role.list('-created_date', 50),
         base44.entities.Compte.list('-created_date', 50),
         base44.entities.Log.list('-created_date', 100),
+        base44.entities.Source.list(),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -73,6 +75,7 @@ export default function Dashboard() {
       setRoles(rl);
       setComptes(cp);
       setLogs(lg);
+      setSources(src);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -107,6 +110,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Role, setRoles),
       subscribeEntity(base44.entities.Compte, setComptes),
       subscribeEntity(base44.entities.Log, setLogs),
+      subscribeEntity(base44.entities.Source, setSources),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -117,6 +121,7 @@ export default function Dashboard() {
   const addCompte = async (data) => { await base44.entities.Compte.create(data); await logAction('Création compte', `Compte "${data.nom}" (${data.matricule}) — ${data.role}`); await loadAll(); };
   const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); await logAction('Suppression compte', `Compte "${c.nom}" (${c.matricule}) supprimé`); } catch (e) {} await loadAll(); };
 
+  const addSource = async (nom) => { try { await base44.entities.Source.create({ nom: nom.trim() }); } catch (e) {} await loadAll(); };
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
     try {
@@ -240,7 +245,7 @@ export default function Dashboard() {
         )}
 
         {view === 'objets' && (
-          <ObjetsView objets={objets} categories={categories} onAdd={addObjet} onDelete={deleteObjet} movements={movements} />
+          <ObjetsView objets={objets} categories={categories} sources={sources} onAdd={addObjet} onDelete={deleteObjet} movements={movements} onAddSource={addSource} />
         )}
 
         {view === 'bijoux' && (
