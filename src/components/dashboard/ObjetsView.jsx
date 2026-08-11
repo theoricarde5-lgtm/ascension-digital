@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { fmt } from '@/lib/coffre';
 
-export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
+export default function ObjetsView({ objets, categories, onAdd, onDelete, canEdit }) {
   const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '' });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,6 +28,7 @@ export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
         <p className="text-[13.5px] mt-1" style={{ color: '#A79FB5' }}>Ajoute et consulte tes objets manuellement.</p>
       </div>
 
+      {canEdit && (
       <form onSubmit={handleSubmit}
         className="rounded-[22px] p-[22px] mb-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
@@ -48,6 +49,7 @@ export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
             style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)' }}>Ajouter l'objet</button>
         </div>
       </form>
+      )}
 
       {objets.length === 0 ? (
         <div className="rounded-[22px] p-[22px] text-[12.5px] text-center"
@@ -59,9 +61,11 @@ export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
           {objets.map(o => (
             <div key={o.id} className="rounded-[22px] p-[18px] relative"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
+              {canEdit && (
               <button onClick={() => onDelete(o)} title="Supprimer"
                 className="absolute top-3 right-3 w-[22px] h-[22px] rounded-[7px] flex items-center justify-center text-xs"
                 style={{ color: '#6C6479' }}>✕</button>
+              )}
               <div className="text-[10.5px] font-bold uppercase tracking-wider mb-1.5 pr-6" style={{ color: '#6C6479' }}>{o.categorie || 'Sans catégorie'}</div>
               <div className="font-display text-[16px] font-bold mb-0.5">{o.nom}</div>
               {o.description && <div className="text-[12.5px] leading-[1.5] mb-3" style={{ color: '#A79FB5' }}>{o.description}</div>}

@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState('Soldat');
   const [users, setUsers] = useState([]);
+  const [permissions, setPermissions] = useState([]);
   const [currentView, setCurrentView] = useState('dashboard');
   const [movements, setMovements] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -63,6 +64,16 @@ export default function Dashboard() {
     setCategories(cats);
     setBijoux(bjx);
     setCategorieBijoux(catBjx);
+
+    let perms = await base44.entities.Permission.list('-created_date');
+    if (perms.length === 0) {
+      await base44.entities.Permission.bulkCreate([
+        { role: 'Jefe', movements: true, objets: true, bijoux: true, categories: true, bijouxCategories: true },
+        { role: 'Soldat', movements: false, objets: true, bijoux: true, categories: true, bijouxCategories: true },
+      ]);
+      perms = await base44.entities.Permission.list('-created_date');
+    }
+    setPermissions(perms);
   }, []);
 
   useEffect(() => {
@@ -153,6 +164,17 @@ export default function Dashboard() {
     if (u.id === user?.id) setRole(coffre_role);
   };
 
+  const handleUpdatePermission = async (perm, key, value) => {
+    await base44.entities.Permission.update(perm.id, { [key]: value });
+    await loadData();
+  };
+
+  const can = (key) => {
+    const p = permissions.find(x => x.role === role);
+    if (!p) return role === 'Jefe';
+    return !!p[key];
+  };
+
   const handleLogout = async () => {
     await base44.auth.logout();
   };
@@ -192,7 +214,7 @@ export default function Dashboard() {
             <HeroSection solde={solde} totalDepot={totalDepot} totalRetrait={totalRetrait} movementCount={movements.length} userName={userName} />
             <ChipStrip />
             <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-5 items-start max-w-[940px] mx-auto">
-              <MovementsPanel role={role} movements={movements} onAdd={handleAddMovement} onDelete={handleDeleteMovement} />
+              <MovementsPanel canEdit={can('movements')} movements={movements} onAdd={handleAddMovement} onDelete={handleDeleteMovement} />
               <SidePanel announcement={announcement} onOpenForm={() => setModalOpen(true)} />
             </div>
           </>
@@ -200,23 +222,23 @@ export default function Dashboard() {
 
         {currentView === 'logs' && <LogsView logs={logs} />}
 
-        {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} />}
+        {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canEdit={can('objets')} />}
 
         {currentView === 'inventaire' && <InventoryView objets={objets} />}
 
-        {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} />}
+        {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} canEdit={can('categories')} />}
 
-        {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} />}
+        {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} canEdit={can('bijoux')} />}
 
         {currentView === 'bijoux-inventaire' && <BijouxInventoryView bijoux={bijoux} />}
 
-        {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} />}
+        {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} canEdit={can('bijouxCategories')} />}
 
         {currentView === 'requests' && <RequestsView requests={requests} />}
 
         {currentView === 'announcements' && <AnnouncementsView announcements={announcements} />}
 
-        {currentView === 'users' && <UsersView users={users} currentUser={user} onUpdateRole={handleUpdateUserRole} />}
+        {currentView === 'users' && <UsersView users={users} currentUser={user} onUpdateRole={handleUpdateUserRole} permissions={permissions} onUpdatePermission={handleUpdatePermission} />}
       </div>
 
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />

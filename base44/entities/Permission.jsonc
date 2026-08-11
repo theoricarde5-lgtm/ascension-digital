@@ -1,0 +1,36 @@
+{
+  "name": "Permission",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "Jefe",
+        "Soldat"
+      ]
+    },
+    "movements": {
+      "type": "boolean",
+      "default": false
+    },
+    "objets": {
+      "type": "boolean",
+      "default": true
+    },
+    "bijoux": {
+      "type": "boolean",
+      "default": true
+    },
+    "categories": {
+      "type": "boolean",
+      "default": true
+    },
+    "bijouxCategories": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "role"
+  ]
+}

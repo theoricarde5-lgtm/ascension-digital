@@ -1,7 +1,30 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
 
-export default function UsersView({ users, currentUser, onUpdateRole }) {
+const PERMS = [
+  { key: 'movements', label: 'Mouvements' },
+  { key: 'objets', label: 'Objets' },
+  { key: 'bijoux', label: 'Bijoux' },
+  { key: 'categories', label: 'Catégories' },
+  { key: 'bijouxCategories', label: 'Cat. Bijoux' },
+];
+
+export default function UsersView({ users, currentUser, onUpdateRole, permissions, onUpdatePermission }) {
+  const jefe = permissions.find(p => p.role === 'Jefe') || {};
+  const soldat = permissions.find(p => p.role === 'Soldat') || {};
+
+  const Toggle = ({ perm, permKey }) => {
+    const val = !!(perm && perm[permKey]);
+    return (
+      <button onClick={() => perm && onUpdatePermission(perm, permKey, !val)}
+        className="w-[42px] h-[24px] rounded-full relative transition-colors"
+        style={{ background: val ? 'linear-gradient(120deg, #8B5CF6, #F472B6)' : 'rgba(255,255,255,0.10)' }}>
+        <span className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white transition-all"
+          style={{ left: val ? '21px' : '3px' }} />
+      </button>
+    );
+  };
+
   return (
     <div className="max-w-[940px] mx-auto text-center">
       <div className="flex items-center justify-center gap-2.5 mb-2">
@@ -9,10 +32,27 @@ export default function UsersView({ users, currentUser, onUpdateRole }) {
         <h1 className="font-display text-[22px] font-bold">Gestion des rôles</h1>
       </div>
       <p className="text-[13.5px] mb-7" style={{ color: '#A79FB5' }}>
-        Assigne le rôle <b>Jefe</b> (accès complet) ou <b>Soldat</b> (lecture seule) à chaque membre.
+        Configure ce que chaque rôle peut faire, puis assigne le rôle à chaque membre.
       </p>
 
+      <div className="rounded-[22px] p-[22px] mb-5 text-left" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
+        <h2 className="font-display text-[15.5px] font-bold mb-4 text-center">Permissions par rôle</h2>
+        <div className="grid grid-cols-[1fr_auto_auto] gap-x-5 gap-y-3 items-center justify-items-center">
+          <div />
+          <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#C7B3FA' }}>Jefe</div>
+          <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#A79FB5' }}>Soldat</div>
+          {PERMS.map(p => (
+            <React.Fragment key={p.key}>
+              <div className="text-[13px] font-semibold justify-self-start">{p.label}</div>
+              <Toggle perm={jefe} permKey={p.key} />
+              <Toggle perm={soldat} permKey={p.key} />
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
       <div className="rounded-[22px] p-[22px] text-left" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
+        <h2 className="font-display text-[15.5px] font-bold mb-4 text-center">Membres</h2>
         {users.length === 0 ? (
           <div className="text-[12.5px] text-center py-[18px]" style={{ color: '#6C6479' }}>Aucun utilisateur.</div>
         ) : (
