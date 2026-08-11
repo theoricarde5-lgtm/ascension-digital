@@ -198,6 +198,10 @@ export default function Dashboard() {
   return (
     <PinGate>
     <div className="min-h-screen relative" style={{ background: '#0D0B12', color: '#F5F3F9', fontFamily: "'Inter', sans-serif" }}>
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{ backgroundImage: 'url(https://media.base44.com/images/public/6a78e21367f0139109c57ae6/d236d0bd5_image.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.18 }} />
+      <div className="fixed inset-0 z-0 pointer-events-none"
+        style={{ background: 'linear-gradient(180deg, rgba(13,11,18,0.72), rgba(13,11,18,0.92))' }} />
       <div className="fixed -top-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full pointer-events-none z-0"
         style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)', opacity: 0.14, filter: 'blur(120px)' }} />
 
