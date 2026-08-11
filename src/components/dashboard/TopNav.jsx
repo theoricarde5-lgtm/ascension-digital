@@ -52,7 +52,7 @@ export default function TopNav({ currentView, onViewChange, role, onRoleChange, 
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
           <div className="w-7 h-7 rounded-full" style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)' }} />
           <div>
-            <div className="text-[12.5px] font-semibold">{user?.full_name || 'Fernando Montoya'}</div>
+            <div className="text-[12.5px] font-semibold">{user?.full_name || 'Fernando'}</div>
             <div className="text-[10px]" style={{ color: '#6C6479' }}>{role} · #01</div>
           </div>
         </div>
