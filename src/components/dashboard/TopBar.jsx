@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 
 const initials = (nom) => (nom || '?').split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
 
@@ -31,8 +32,12 @@ export default function TopBar({ query, setQuery }) {
           <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full" style={{ background: '#ff5722' }} />
         </button>
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white"
-            style={{ background: '#ff5722' }}>{initials(user?.nom)}</div>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white overflow-hidden"
+            style={{ background: user?.couleur || '#ff5722' }}>
+            {user?.photo
+              ? <Image src={user.photo} fittingType="fill" className="w-full h-full" />
+              : initials(user?.nom)}
+          </div>
           <div className="hidden sm:block leading-tight">
             <div className="text-[13.5px] font-semibold text-white">{user?.nom || 'Utilisateur'}</div>
             <div className="text-[11.5px]" style={{ color: '#808080' }}>{user?.role || 'Membre'}</div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, X, Trash2, User } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 
 const getRoleStyle = (role) => {
   if (role === 'Dev') return { accent: '#9c27b0', grad: '#b561d4' };
@@ -47,9 +48,11 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
                   className="absolute top-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center"
                   style={{ color: '#808080', background: '#121212' }}><Trash2 size={14} /></button>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px]"
-                    style={{ background: `linear-gradient(135deg, ${accent}, ${grad})` }}>
-                    {c.nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+                  <div className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px] overflow-hidden"
+                    style={{ background: c.photo ? '#1c1c1c' : `linear-gradient(135deg, ${accent}, ${grad})` }}>
+                    {c.photo
+                      ? <Image src={c.photo} fittingType="fill" className="w-full h-full" />
+                      : c.nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
                     <div className="text-[15px] font-semibold text-white truncate">{c.nom}</div>

@@ -180,6 +180,22 @@ export default function Dashboard() {
     await loadAll();
   };
 
+  const updateProfile = useCallback(async ({ couleur, photo }) => {
+    try {
+      const matches = await base44.entities.Compte.filter({ matricule: currentUser?.matricule });
+      const me = matches[0];
+      if (!me) return { ok: false, error: 'Compte introuvable.' };
+      await base44.entities.Compte.update(me.id, { couleur, photo });
+      const updated = { ...currentUser, couleur, photo };
+      sessionStorage.setItem('ls_user', JSON.stringify(updated));
+      setCurrentUser(updated);
+      await logAction('Mise à jour profil', `Photo ${photo ? 'modifiée' : 'retirée'} · Couleur ${couleur}`);
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: 'Échec de la mise à jour.' };
+    }
+  }, [currentUser, logAction]);
+
   const changePassword = useCallback(async (currentPwd, newPwd) => {
     try {
       const matches = await base44.entities.Compte.filter({ matricule: currentUser?.matricule });
@@ -248,7 +264,7 @@ export default function Dashboard() {
         )}
 
         {view === 'parametres' && (
-          <SettingsView currentUser={currentUser} onChangePassword={changePassword} />
+          <SettingsView currentUser={currentUser} onChangePassword={changePassword} onUpdateProfile={updateProfile} />
         )}
       </main>
     </div>
