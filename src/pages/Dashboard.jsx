@@ -18,7 +18,7 @@ import BijouxInventoryView from '@/components/dashboard/BijouxInventoryView';
 import BijouxCategoriesView from '@/components/dashboard/BijouxCategoriesView';
 import UsersView from '@/components/dashboard/UsersView';
 import ProfileView from '@/components/dashboard/ProfileView';
-import PinGate from '@/components/dashboard/PinGate';
+
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -213,7 +213,6 @@ export default function Dashboard() {
   }
 
   return (
-    <PinGate>
     <div className="min-h-screen relative" style={{ background: '#0D0B12', color: '#F5F3F9', fontFamily: "'Inter', sans-serif" }}>
       <div className="fixed inset-0 z-0 pointer-events-none"
         style={{ backgroundImage: 'url(https://media.base44.com/images/public/6a78e21367f0139109c57ae6/d236d0bd5_image.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.18 }} />
@@ -267,6 +266,5 @@ export default function Dashboard() {
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />
       <Toast show={toast.show} message={toast.message} />
     </div>
-    </PinGate>
   );
 }
