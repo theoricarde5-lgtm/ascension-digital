@@ -55,7 +55,7 @@ export default function LoginPage() {
 
         <div className="relative">
           <div className="text-[44px] leading-[1.05] font-bold text-white tracking-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
-            Le registre<br />de la maison.
+            Famille<br />Montoya
           </div>
           <div className="text-[15px] mt-5 max-w-[340px] leading-relaxed" style={{ color: '#8a8a8f' }}>
             Gestion des objets, bijoux et outils premium — accès réservé.
