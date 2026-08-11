@@ -87,7 +87,7 @@ export default function Dashboard() {
       try {
         const me = await base44.auth.me();
         setUser(me);
-        setRole(me.coffre_role || 'Soldat');
+        setRole(me?.coffre_role || 'Administrateur');
       } catch (e) { /* non connecté */ }
       try { await loadData(); } catch (e) { /* ignore */ }
       try {
