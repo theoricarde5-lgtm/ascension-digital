@@ -57,8 +57,8 @@ export default function Dashboard() {
   const loadAll = useCallback(async () => {
     try {
       const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar] = await Promise.all([
-        base44.entities.Objet.list('-created_date', 50),
-        base44.entities.Bijou.list('-created_date', 50),
+        base44.entities.Objet.list('-created_date', 500),
+        base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
         base44.entities.CategorieBijou.list(),
         base44.entities.Movement.list('-created_date', 50),

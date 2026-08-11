@@ -4,7 +4,7 @@ import { AddModal as AddObjetModal } from '@/components/dashboard/ObjetsView';
 
 export default function CalculateurView({ objets = [], bijoux = [], categories = [], catObjets = [], sources = [], onAddBijou, onAddObjet, onAddSource }) {
   const [query, setQuery] = useState('');
-  const [selected, setSelected] = useState({}); // { key: prix }
+  const [selected, setSelected] = useState({}); // { key: { prix, quantite } }
   const [activeType, setActiveType] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
   const [objetModalOpen, setObjetModalOpen] = useState(false);
@@ -27,21 +27,25 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
     });
   }, [items, activeType, query]);
 
-  const toggle = (key, prixDefaut) => {
+  const toggle = (key, prixDefaut, quantiteDefaut) => {
     setSelected(prev => {
       const next = { ...prev };
       if (next[key] !== undefined) delete next[key];
-      else next[key] = prixDefaut || 0;
+      else next[key] = { prix: prixDefaut || 0, quantite: Math.max(1, quantiteDefaut || 1) };
       return next;
     });
   };
 
   const setPrice = (key, value) => {
-    setSelected(prev => ({ ...prev, [key]: parseFloat(value) || 0 }));
+    setSelected(prev => ({ ...prev, [key]: { ...prev[key], prix: parseFloat(value) || 0 } }));
+  };
+
+  const setQuantite = (key, value) => {
+    setSelected(prev => ({ ...prev, [key]: { ...prev[key], quantite: Math.max(0, parseInt(value) || 0) } }));
   };
 
   const selectedKeys = Object.keys(selected);
-  const total = selectedKeys.reduce((s, k) => s + (selected[k] || 0), 0);
+  const total = selectedKeys.reduce((s, k) => s + ((selected[k].prix || 0) * (selected[k].quantite || 0)), 0);
   const count = selectedKeys.length;
 
   const clearAll = () => setSelected({});
@@ -130,7 +134,7 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
                   border: isChecked ? '1px solid var(--montoya-accent)' : '1px solid rgba(255,255,255,0.06)'
                 }}>
                 <div className="flex items-start gap-3">
-                  <button onClick={() => toggle(it.key, it.prixDefaut)}
+                  <button onClick={() => toggle(it.key, it.prixDefaut, it.quantite)}
                     className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors"
                     style={isChecked ? { background: 'var(--montoya-accent)', color: '#fff' } : { background: '#121212', border: '1px solid rgba(255,255,255,0.15)' }}>
                     {isChecked && <Check size={14} />}
@@ -146,12 +150,20 @@ export default function CalculateurView({ objets = [], bijoux = [], categories =
                   </div>
                 </div>
                 {isChecked && (
-                  <div className="mt-3 flex items-center gap-2 pl-9">
-                    <span className="text-[11px]" style={{ color: '#808080' }}>Prix</span>
-                    <input type="number" value={selected[it.key]} onChange={(e) => setPrice(it.key, e.target.value)}
-                      className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
-                      style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
-                    <span className="text-[12px] font-semibold" style={{ color: '#fff' }}>$</span>
+                  <div className="mt-3 grid grid-cols-2 gap-2 pl-9">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px]" style={{ color: '#808080' }}>Prix</span>
+                      <input type="number" value={selected[it.key].prix} onChange={(e) => setPrice(it.key, e.target.value)}
+                        className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
+                        style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+                      <span className="text-[12px] font-semibold" style={{ color: '#fff' }}>$</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px]" style={{ color: '#808080' }}>Qté</span>
+                      <input type="number" min="0" value={selected[it.key].quantite} onChange={(e) => setQuantite(it.key, e.target.value)}
+                        className="flex-1 rounded-lg px-2.5 py-1.5 text-[13px] w-full"
+                        style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
+                    </div>
                   </div>
                 )}
               </div>
