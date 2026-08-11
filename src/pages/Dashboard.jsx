@@ -11,6 +11,7 @@ import Toast from '@/components/dashboard/Toast';
 import RequestsView from '@/components/dashboard/RequestsView';
 import AnnouncementsView from '@/components/dashboard/AnnouncementsView';
 import ObjetsView from '@/components/dashboard/ObjetsView';
+import InventoryView from '@/components/dashboard/InventoryView';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -138,6 +139,8 @@ export default function Dashboard() {
         {currentView === 'logs' && <LogsView logs={logs} />}
 
         {currentView === 'objets' && <ObjetsView objets={objets} onAdd={handleAddObjet} onDelete={handleDeleteObjet} />}
+
+        {currentView === 'inventaire' && <InventoryView objets={objets} />}
 
         {currentView === 'requests' && <RequestsView requests={requests} />}
 

@@ -5,6 +5,7 @@ export default function TopNav({ currentView, onViewChange, role, onRoleChange, 
   const pills = [
     { id: 'dashboard', label: 'Espace personnel' },
     { id: 'objets', label: 'Objet' },
+    { id: 'inventaire', label: 'Inventaire' },
     { id: 'requests', label: 'Demandes' },
     { id: 'logs', label: 'Logs' },
     { id: 'announcements', label: 'Annonces' },
