@@ -1,0 +1,47 @@
+{
+  "name": "Arme",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    },
+    "categorie": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "prix_location": {
+      "type": "number"
+    },
+    "caution": {
+      "type": "number"
+    },
+    "quantite": {
+      "type": "number"
+    },
+    "statut": {
+      "type": "string",
+      "enum": [
+        "Disponible",
+        "Lou\u00e9",
+        "Rendu"
+      ],
+      "default": "Disponible"
+    },
+    "locataire": {
+      "type": "string"
+    },
+    "date_debut": {
+      "type": "string",
+      "format": "date"
+    },
+    "date_retour": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}

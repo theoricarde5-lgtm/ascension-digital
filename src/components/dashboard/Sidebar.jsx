@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -28,6 +28,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
     { id: 'objets', icon: Box, label: 'Objets' },
     { id: 'bijoux', icon: Gem, label: 'Bijoux' },
     { id: 'outils', icon: Wrench, label: 'Stock Outils' },
+    { id: 'armes', icon: Swords, label: 'Location Armes' },
   ];
   const isInventoryActive = inventoryItems.some(i => i.id === active);
 

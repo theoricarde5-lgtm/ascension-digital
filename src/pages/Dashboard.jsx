@@ -14,6 +14,7 @@ import ComptesView from '@/components/dashboard/ComptesView';
 import LogsView from '@/components/dashboard/LogsView';
 import SettingsView from '@/components/dashboard/SettingsView';
 import SourcesView from '@/components/dashboard/SourcesView';
+import ArmesView from '@/components/dashboard/ArmesView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function Dashboard() {
   const [comptes, setComptes] = useState([]);
   const [logs, setLogs] = useState([]);
   const [sources, setSources] = useState([]);
+  const [armes, setArmes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -53,7 +55,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
@@ -65,6 +67,7 @@ export default function Dashboard() {
         base44.entities.Compte.list('-created_date', 50),
         base44.entities.Log.list('-created_date', 100),
         base44.entities.Source.list(),
+        base44.entities.Arme.list('-created_date', 50),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -77,6 +80,7 @@ export default function Dashboard() {
       setComptes(cp);
       setLogs(lg);
       setSources(src);
+      setArmes(ar);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -112,6 +116,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Compte, setComptes),
       subscribeEntity(base44.entities.Log, setLogs),
       subscribeEntity(base44.entities.Source, setSources),
+      subscribeEntity(base44.entities.Arme, setArmes),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -123,6 +128,54 @@ export default function Dashboard() {
   const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); await logAction('Suppression compte', `Compte "${c.nom}" (${c.matricule}) supprimé`); } catch (e) {} await loadAll(); };
 
   const addSource = async (nom) => { try { await base44.entities.Source.create({ nom: nom.trim() }); } catch (e) {} await loadAll(); };
+  const addArme = async (data) => {
+    await base44.entities.Arme.create(data);
+    try {
+      await base44.entities.Movement.create({
+        type: 'depot',
+        montant: data.caution || 0,
+        note: `Caution arme : ${data.nom}`
+      });
+    } catch (e) {}
+    await logAction('Ajout arme', `${data.nom}${data.categorie ? ` (${data.categorie})` : ''}`);
+    await loadAll();
+  };
+  const deleteArme = async (a) => { try { await base44.entities.Arme.delete(a.id); await logAction('Suppression arme', `${a.nom}`); } catch (e) {} await loadAll(); };
+  const louerArme = async (a, data) => {
+    try {
+      await base44.entities.Arme.update(a.id, {
+        statut: 'Loué',
+        locataire: data.locataire,
+        date_debut: data.date_debut,
+        date_retour: data.date_retour,
+        caution: data.caution,
+      });
+      await base44.entities.Movement.create({
+        type: 'depot',
+        montant: (data.caution || 0) + (a.prix_location || 0),
+        note: `Location arme : ${a.nom} → ${data.locataire}`
+      });
+      await logAction('Location arme', `${a.nom} → ${data.locataire}`);
+    } catch (e) {}
+    await loadAll();
+  };
+  const rendreArme = async (a) => {
+    try {
+      await base44.entities.Arme.update(a.id, {
+        statut: 'Disponible',
+        locataire: '',
+        date_debut: '',
+        date_retour: '',
+      });
+      await base44.entities.Movement.create({
+        type: 'retrait',
+        montant: a.caution || 0,
+        note: `Retour caution arme : ${a.nom} (${a.locataire || ''})`
+      });
+      await logAction('Retour arme', `${a.nom} — caution ${a.caution || 0}€ rendue`);
+    } catch (e) {}
+    await loadAll();
+  };
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
     try {
@@ -279,6 +332,10 @@ export default function Dashboard() {
 
         {view === 'groupes' && (
           <SourcesView sources={sources} onAdd={addSource} />
+        )}
+
+        {view === 'armes' && (
+          <ArmesView armes={armes} onAdd={addArme} onDelete={deleteArme} onRent={louerArme} onReturn={rendreArme} movements={movements} />
         )}
       </main>
     </div>
