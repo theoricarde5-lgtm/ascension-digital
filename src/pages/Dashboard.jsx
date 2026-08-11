@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
-import TopNav from '@/components/dashboard/TopNav';
+import Sidebar from '@/components/dashboard/Sidebar';
+import TopBar from '@/components/dashboard/TopBar';
 import HeroSection from '@/components/dashboard/HeroSection';
-import ChipStrip from '@/components/dashboard/ChipStrip';
+import RecentObjets from '@/components/dashboard/RecentObjets';
 import MovementsPanel from '@/components/dashboard/MovementsPanel';
-import SidePanel from '@/components/dashboard/SidePanel';
 import LogsView from '@/components/dashboard/LogsView';
 import RequestModal from '@/components/dashboard/RequestModal';
 import Toast from '@/components/dashboard/Toast';
@@ -29,7 +29,6 @@ export default function Dashboard() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [movements, setMovements] = useState([]);
   const [logs, setLogs] = useState([]);
-  const [announcement, setAnnouncement] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
   const [requests, setRequests] = useState([]);
   const [objets, setObjets] = useState([]);
@@ -52,7 +51,6 @@ export default function Dashboard() {
     setLogs(lg);
     const an = await base44.entities.Announcement.list('-created_date');
     setAnnouncements(an);
-    setAnnouncement(an[0] || null);
     const reqs = await base44.entities.Request.list('-created_date');
     setRequests(reqs);
     const objs = await base44.entities.Objet.list('-created_date');
@@ -63,7 +61,6 @@ export default function Dashboard() {
     setBijoux(bjx);
     const catBjx = await base44.entities.CategorieBijou.list('-created_date');
     setCategorieBijoux(catBjx);
-
     await loadPermissions();
   }, []);
 
@@ -196,71 +193,61 @@ export default function Dashboard() {
     } catch (e) { /* ignore */ }
   };
 
-  const soldeMov = movements.reduce((s, m) => s + (m.type === 'depot' ? m.montant : -m.montant), 0);
-  const totalDepot = movements.filter(m => m.type === 'depot').reduce((s, m) => s + m.montant, 0);
-  const totalRetrait = movements.filter(m => m.type === 'retrait').reduce((s, m) => s + m.montant, 0);
-  const valeurObjets = objets.reduce((s, o) => s + (o.prix || 0) * (o.quantite || 0), 0);
-  const valeurBijoux = bijoux.reduce((s, b) => s + (b.prix || 0) * (b.quantite || 0), 0);
-  const solde = soldeMov + valeurObjets + valeurBijoux;
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0D0B12' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#121212' }}>
         <div className="w-8 h-8 border-4 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(255,255,255,0.1)', borderTopColor: '#8B5CF6' }} />
+          style={{ borderColor: 'rgba(255,255,255,0.1)', borderTopColor: '#ff5722' }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative" style={{ background: '#0D0B12', color: '#F5F3F9', fontFamily: "'Inter', sans-serif" }}>
-      <div className="fixed inset-0 z-0 pointer-events-none"
-        style={{ backgroundImage: 'url(https://media.base44.com/images/public/6a78e21367f0139109c57ae6/d236d0bd5_image.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.18 }} />
-      <div className="fixed inset-0 z-0 pointer-events-none"
-        style={{ background: 'linear-gradient(180deg, rgba(13,11,18,0.72), rgba(13,11,18,0.92))' }} />
-      <div className="fixed -top-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full pointer-events-none z-0"
-        style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)', opacity: 0.14, filter: 'blur(120px)' }} />
+    <div className="min-h-screen" style={{ background: '#121212', color: '#fff', fontFamily: "'Inter', sans-serif" }}>
+      <Sidebar
+        currentView={currentView} onViewChange={setCurrentView}
+        role={role} isAdmin={user?.role === 'admin'} onLogout={handleLogout}
+      />
 
-      <div className="relative z-10 max-w-[1180px] mx-auto px-7 pb-[60px] text-center">
-        <TopNav
-          currentView={currentView} onViewChange={setCurrentView}
-          role={role}
-          isAdmin={user?.role === 'admin'}
-          user={user} onOpenForm={() => setModalOpen(true)} onLogout={handleLogout}
-        />
+      <div className="pl-[76px]">
+        <TopBar user={user} role={role} onOpenForm={() => setModalOpen(true)} />
 
-        {currentView === 'dashboard' && (
-          <>
-            <HeroSection solde={solde} totalDepot={totalDepot} totalRetrait={totalRetrait} movementCount={movements.length} userName={userName} />
-            <ChipStrip />
-            <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-5 items-start max-w-[940px] mx-auto">
+        <main className="px-8 py-6 max-w-[1200px] mx-auto">
+          {currentView === 'dashboard' && (
+            <>
+              <HeroSection objets={objets} categories={categories} />
+              <RecentObjets objets={objets} onSeeAll={() => setCurrentView('objets')} />
+            </>
+          )}
+
+          {currentView === 'comptabilite' && (
+            <div className="max-w-[860px] mx-auto">
               <MovementsPanel canAdd={can('movements_add')} canDelete={can('movements_delete')} movements={movements} onAdd={handleAddMovement} onDelete={handleDeleteMovement} />
-              <SidePanel announcement={announcement} onOpenForm={() => setModalOpen(true)} />
             </div>
-          </>
-        )}
+          )}
 
-        {currentView === 'logs' && (role === 'Jefe' || role === 'Administrateur') && <LogsView logs={logs} />}
+          {currentView === 'logs' && (role === 'Jefe' || role === 'Administrateur') && <LogsView logs={logs} />}
 
-        {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canAdd={can('objets_add')} canDelete={can('objets_delete')} />}
+          {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canAdd={can('objets_add')} canDelete={can('objets_delete')} />}
 
-        {currentView === 'inventaire' && <InventoryView objets={objets} />}
+          {currentView === 'inventaire' && <InventoryView objets={objets} />}
 
-        {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} canAdd={can('categories_add')} canDelete={can('categories_delete')} />}
+          {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} canAdd={can('categories_add')} canDelete={can('categories_delete')} />}
 
-        {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} canAdd={can('bijoux_add')} canDelete={can('bijoux_delete')} />}
+          {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} canAdd={can('bijoux_add')} canDelete={can('bijoux_delete')} />}
 
-        {currentView === 'bijoux-inventaire' && <BijouxInventoryView bijoux={bijoux} />}
+          {currentView === 'bijoux-inventaire' && <BijouxInventoryView bijoux={bijoux} />}
 
-        {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} canAdd={can('bijouxCategories_add')} canDelete={can('bijouxCategories_delete')} />}
+          {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} canAdd={can('bijouxCategories_add')} canDelete={can('bijouxCategories_delete')} />}
 
-        {currentView === 'requests' && <RequestsView requests={requests} />}
+          {currentView === 'requests' && <RequestsView requests={requests} />}
 
-        {currentView === 'announcements' && <AnnouncementsView announcements={announcements} />}
+          {currentView === 'announcements' && <AnnouncementsView announcements={announcements} />}
 
-        {currentView === 'users' && <UsersView users={users} currentUser={user} onUpdateRole={handleUpdateUserRole} permissions={permissions} onUpdatePermission={handleUpdatePermission} />}
+          {currentView === 'users' && <UsersView users={users} currentUser={user} onUpdateRole={handleUpdateUserRole} permissions={permissions} onUpdatePermission={handleUpdatePermission} />}
 
-        {currentView === 'profile' && <ProfileView user={user} onUpdated={handleProfileUpdated} />}
+          {currentView === 'profile' && <ProfileView user={user} onUpdated={handleProfileUpdated} />}
+        </main>
       </div>
 
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />

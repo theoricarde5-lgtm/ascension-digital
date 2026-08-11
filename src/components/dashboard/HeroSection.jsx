@@ -1,54 +1,38 @@
 import React from 'react';
-import { fmt } from '@/lib/coffre';
+import { Package, Boxes, Layers, ArrowUpRight } from 'lucide-react';
 
-export default function HeroSection({ solde, totalDepot, totalRetrait, movementCount, userName }) {
-  const sparks = [35, 55, 40, 70, 50, 85, 65, 100];
+export default function HeroSection({ objets, categories }) {
+  const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
+  const cards = [
+    { icon: Package, value: objets.length, label: 'Objets enregistrés', color: '#ff5722' },
+    { icon: Boxes, value: totalUnits, label: 'Unités au total', color: '#2196f3' },
+    { icon: Layers, value: categories.length, label: 'Catégories', color: '#9c27b0' },
+  ];
+
   return (
     <>
-      <div className="mb-[18px] mt-2 text-center">
-        <h1 className="font-display text-[26px] font-bold tracking-tight">Bonjour, {userName?.split(' ')[0] || 'Fernando'}</h1>
-        <p className="text-[13.5px] mt-1" style={{ color: '#A79FB5' }}>Voici l'état du coffre de l'entreprise.</p>
+      <div className="mb-7">
+        <h1 className="text-[28px] font-bold text-white tracking-tight">Bonjour 👋</h1>
+        <p className="text-[14px] mt-1" style={{ color: '#808080' }}>Voici votre registre d'objets partagé.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-[18px] max-w-[940px] mx-auto">
-        <div className="rounded-[22px] p-[26px] relative overflow-hidden flex flex-col justify-between min-h-[230px]"
-          style={{ background: 'linear-gradient(165deg, rgba(139,92,246,0.18), rgba(244,114,182,0.06)), rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
-          <div className="absolute -right-[60px] -top-[60px] w-[220px] h-[220px] rounded-full pointer-events-none"
-            style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)', opacity: 0.18, filter: 'blur(50px)' }} />
-          <div className="relative">
-            <div className="text-[11px] font-bold uppercase tracking-wider" style={{ color: '#A79FB5' }}>Solde du coffre</div>
-            <div className="font-display text-[42px] font-extrabold mt-2.5 tracking-tight">{fmt(solde)}</div>
-            <div className="text-[12.5px] mt-1.5" style={{ color: '#A79FB5' }}>
-              {movementCount} mouvement{movementCount > 1 ? 's' : ''} enregistré{movementCount > 1 ? 's' : ''}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-7">
+        {cards.map((c, i) => {
+          const Icon = c.icon;
+          return (
+            <div key={i} className="rounded-2xl p-5 relative"
+              style={{ background: '#1c1c1c', borderTop: `3px solid ${c.color}` }}>
+              <ArrowUpRight size={16} className="absolute top-4 right-4" style={{ color: '#808080' }} />
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+                style={{ background: `${c.color}1a`, color: c.color }}>
+                <Icon size={20} />
+              </div>
+              <div className="text-[28px] font-bold text-white">{c.value}</div>
+              <div className="text-[13px] mt-0.5" style={{ color: '#808080' }}>{c.label}</div>
             </div>
-          </div>
-          <div className="flex items-end gap-[5px] h-[44px] mt-[18px] relative">
-            {sparks.map((h, i) => (
-              <span key={i} className="block w-[7px] rounded-t"
-                style={{ height: `${h}%`, background: 'linear-gradient(120deg, #8B5CF6, #F472B6)', opacity: i === sparks.length - 1 ? 1 : 0.55 }} />
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3.5">
-          <MiniCard label="Total déposé" value={fmt(totalDepot)} icon="↑" />
-          <MiniCard label="Total retiré" value={fmt(totalRetrait)} icon="↓" />
-        </div>
+          );
+        })}
       </div>
     </>
-  );
-}
-
-function MiniCard({ label, value, icon }) {
-  return (
-    <div className="rounded-2xl px-[18px] py-4 flex items-center justify-between"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
-      <div>
-        <div className="text-[11px] font-bold uppercase tracking-wider mb-1.5" style={{ color: '#6C6479' }}>{label}</div>
-        <div className="font-display text-[19px] font-bold">{value}</div>
-      </div>
-      <div className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center text-[15px]"
-        style={{ background: 'rgba(139,92,246,0.14)', color: '#C7B3FA' }}>{icon}</div>
-    </div>
   );
 }
