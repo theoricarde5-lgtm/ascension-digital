@@ -1,0 +1,12 @@
+{
+  "name": "CategorieBijou",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}
