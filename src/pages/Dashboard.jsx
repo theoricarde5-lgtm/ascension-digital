@@ -168,7 +168,7 @@ export default function Dashboard() {
           <>
             <HeroSection solde={solde} totalDepot={totalDepot} totalRetrait={totalRetrait} movementCount={movements.length} userName={userName} />
             <ChipStrip />
-            <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-5 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-5 items-start max-w-[940px] mx-auto">
               <MovementsPanel role={role} movements={movements} onAdd={handleAddMovement} onDelete={handleDeleteMovement} />
               <SidePanel announcement={announcement} onOpenForm={() => setModalOpen(true)} />
             </div>

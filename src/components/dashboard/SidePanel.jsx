@@ -3,7 +3,7 @@ import React from 'react';
 export default function SidePanel({ announcement, onOpenForm }) {
   return (
     <div className="flex flex-col gap-[18px]">
-      <div className="rounded-[22px] p-[22px]" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
+      <div className="rounded-[22px] p-[22px] text-center" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
         {announcement ? (
           <div className="pl-3.5" style={{ borderLeft: '3px solid', borderImage: 'linear-gradient(120deg, #8B5CF6, #F472B6) 1' }}>
             <div className="font-bold text-[13.5px] mb-1">{announcement.title}</div>

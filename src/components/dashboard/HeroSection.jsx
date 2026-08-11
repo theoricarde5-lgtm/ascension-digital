@@ -5,12 +5,12 @@ export default function HeroSection({ solde, totalDepot, totalRetrait, movementC
   const sparks = [35, 55, 40, 70, 50, 85, 65, 100];
   return (
     <>
-      <div className="mb-[18px] mt-2">
+      <div className="mb-[18px] mt-2 text-center">
         <h1 className="font-display text-[26px] font-bold tracking-tight">Bonjour, {userName?.split(' ')[0] || 'Fernando'}</h1>
         <p className="text-[13.5px] mt-1" style={{ color: '#A79FB5' }}>Voici l'état du coffre de l'entreprise.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-[18px]">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-[18px] max-w-[940px] mx-auto">
         <div className="rounded-[22px] p-[26px] relative overflow-hidden flex flex-col justify-between min-h-[230px]"
           style={{ background: 'linear-gradient(165deg, rgba(139,92,246,0.18), rgba(244,114,182,0.06)), rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
           <div className="absolute -right-[60px] -top-[60px] w-[220px] h-[220px] rounded-full pointer-events-none"

@@ -8,7 +8,7 @@ export default function ChipStrip() {
     { label: 'Indicateur 7', value: '0', accent: false },
   ];
   return (
-    <div className="flex gap-3 overflow-x-auto my-6 pb-1">
+    <div className="flex gap-3 justify-center flex-wrap my-6 pb-1">
       {chips.map((c, i) => (
         <div key={i} className="flex-none min-w-[150px] rounded-[11px] px-4 py-[13px]"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>

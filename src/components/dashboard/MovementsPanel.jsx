@@ -18,7 +18,7 @@ export default function MovementsPanel({ role, movements, onAdd, onDelete }) {
 
   return (
     <div className="rounded-[22px] p-[22px]" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
-      <h2 className="font-display text-[15.5px] font-bold mb-4">Mouvements du coffre</h2>
+      <h2 className="font-display text-[15.5px] font-bold mb-4 text-center">Mouvements du coffre</h2>
 
       {!isComptable && (
         <div className="text-[12.5px] mb-4 px-3.5 py-3 rounded-[11px]"
