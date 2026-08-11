@@ -195,15 +195,15 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#121212' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F4F6F9' }}>
         <div className="w-8 h-8 border-4 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(255,255,255,0.1)', borderTopColor: '#ff5722' }} />
+          style={{ borderColor: '#ECEFF4', borderTopColor: '#FF5733' }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#121212', color: '#fff', fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen" style={{ background: '#F4F6F9', color: '#2C3E50', fontFamily: "'Inter', sans-serif" }}>
       <Sidebar
         currentView={currentView} onViewChange={setCurrentView}
         role={role} isAdmin={user?.role === 'admin'} onLogout={handleLogout}
