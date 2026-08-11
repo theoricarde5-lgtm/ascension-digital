@@ -109,6 +109,8 @@ export default function Dashboard() {
               objetsCount={loading ? '—' : objets.length}
               totalUnits={loading ? '—' : totalUnits}
               categoriesCount={loading ? '—' : categories.length}
+              bijouxCount={loading ? '—' : bijoux.length}
+              onNavigate={setView}
             />
             <RecentObjets objets={loading ? [] : objets} />
           </>

@@ -1,19 +1,20 @@
 import React from 'react';
-import { Box, Layers, ArrowUpRight } from 'lucide-react';
+import { Box, Layers, Gem, ArrowUpRight } from 'lucide-react';
 
-export default function StatCards({ objetsCount, totalUnits, categoriesCount }) {
+export default function StatCards({ objetsCount, totalUnits, categoriesCount, bijouxCount, onNavigate }) {
   const cards = [
-    { accent: '#ff5722', icon: Box, value: objetsCount, label: 'Objets enregistrés' },
-    { accent: '#448aff', icon: Layers, value: totalUnits, label: 'Unités au total' },
-    { accent: '#9c27b0', icon: Layers, value: categoriesCount, label: 'Catégories' },
+    { accent: '#ff5722', icon: Box, value: objetsCount, label: 'Objets enregistrés', view: 'objets' },
+    { accent: '#e8b923', icon: Gem, value: bijouxCount, label: 'Bijoux enregistrés', view: 'bijoux' },
+    { accent: '#448aff', icon: Layers, value: totalUnits, label: 'Unités au total', view: 'objets' },
+    { accent: '#9c27b0', icon: Layers, value: categoriesCount, label: 'Catégories', view: 'objets' },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {cards.map((c, i) => {
         const Icon = c.icon;
         return (
-          <div key={i} className="rounded-2xl p-5 relative overflow-hidden"
+          <div key={i} onClick={() => onNavigate?.(c.view)} className="rounded-2xl p-5 relative overflow-hidden cursor-pointer"
             style={{ background: '#1c1c1c', borderTop: `3px solid ${c.accent}` }}>
             <button className="absolute top-4 right-4 w-7 h-7 rounded-lg flex items-center justify-center"
               style={{ background: 'rgba(255,255,255,0.04)', color: '#808080' }}>
