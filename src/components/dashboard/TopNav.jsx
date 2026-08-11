@@ -11,7 +11,7 @@ export default function TopNav({ currentView, onViewChange, role, isAdmin, user,
     { id: 'bijoux-inventaire', label: 'Inv. Bijoux' },
     { id: 'bijoux-categories', label: 'Cat. Bijoux' },
     { id: 'requests', label: 'Demandes' },
-    { id: 'logs', label: 'Logs' },
+    ...(role === 'Jefe' ? [{ id: 'logs', label: 'Logs' }] : []),
     { id: 'announcements', label: 'Annonces' },
     ...(isAdmin ? [{ id: 'users', label: 'Utilisateurs' }] : []),
   ];

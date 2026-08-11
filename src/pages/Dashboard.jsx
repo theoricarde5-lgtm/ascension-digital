@@ -224,7 +224,7 @@ export default function Dashboard() {
           </>
         )}
 
-        {currentView === 'logs' && <LogsView logs={logs} />}
+        {currentView === 'logs' && role === 'Jefe' && <LogsView logs={logs} />}
 
         {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canEdit={can('objets')} />}
 
