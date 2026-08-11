@@ -1,7 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate }) {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    sessionStorage.removeItem('ls_user');
+    navigate('/', { replace: true });
+  };
   const items = [
     { id: 'dashboard', icon: LayoutGrid, label: 'Dashboard' },
     { id: 'objets', icon: Box, label: 'Objets' },
@@ -37,7 +43,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate }) {
       </nav>
 
       {/* Logout */}
-      <button title="Déconnexion"
+      <button title="Déconnexion" onClick={handleLogout}
         className="w-11 h-11 rounded-xl flex items-center justify-center"
         style={{ color: '#808080' }}>
         <LogOut size={20} />

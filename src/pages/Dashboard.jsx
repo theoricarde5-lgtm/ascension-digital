@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import Sidebar from '@/components/dashboard/Sidebar';
 import TopBar from '@/components/dashboard/TopBar';
@@ -10,6 +11,7 @@ import CoffreView from '@/components/dashboard/CoffreView';
 import OutilsView from '@/components/dashboard/OutilsView';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [view, setView] = useState('dashboard');
   const [query, setQuery] = useState('');
   const [objets, setObjets] = useState([]);
@@ -46,7 +48,13 @@ export default function Dashboard() {
     }
   }, []);
 
-  useEffect(() => { loadAll(); }, [loadAll]);
+  useEffect(() => {
+    if (!sessionStorage.getItem('ls_user')) {
+      navigate('/', { replace: true });
+      return;
+    }
+    loadAll();
+  }, [loadAll, navigate]);
 
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
