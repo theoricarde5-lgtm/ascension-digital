@@ -127,8 +127,13 @@ export default function LoginPage() {
           <div className="mt-5 grid grid-cols-2 gap-3">
             {users.map(u => {
               const selected = matricule === u.matricule;
-              const isDev = u.role === 'Dev';
-              const accent = isDev ? '#9c27b0' : '#ff473a';
+              const getRoleStyle = (role) => {
+                if (role === 'Dev') return { accent: '#9c27b0', grad: '#b561d4' };
+                if (role === 'Teniente') return { accent: '#000000', grad: '#3a3a3a' };
+                return { accent: '#ff473a', grad: '#ff7a4d' };
+              };
+              const { accent, grad } = getRoleStyle(u.role);
+              const isBlack = accent === '#000000';
               return (
                 <button key={u.matricule} type="button" onClick={() => setMatricule(u.matricule)}
                   className="group relative flex items-center gap-3 p-3.5 rounded-2xl transition-all overflow-hidden"
@@ -138,15 +143,17 @@ export default function LoginPage() {
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ background: `radial-gradient(circle at top right, ${accent}14, transparent 60%)` }} />
                   <div className="relative w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${accent}, ${isDev ? '#b561d4' : '#ff7a4d'})` }}>
+                    style={{ background: `linear-gradient(135deg, ${accent}, ${grad})` }}>
                     {initials(u.nom)}
                   </div>
                   <div className="relative flex-1 min-w-0 text-left">
                     <div className="text-[13.5px] font-semibold text-white truncate">{u.nom}</div>
                     <div className="flex items-center gap-1.5 mt-1">
                       <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                        style={{ background: `${accent}1f`, color: accent }}>
-                        {isDev ? '◆' : '●'} {u.role}
+                        style={isBlack
+                          ? { background: '#000', color: '#fff', border: '1px solid rgba(255,255,255,0.25)' }
+                          : { background: `${accent}1f`, color: accent }}>
+                        {u.role === 'Dev' ? '◆' : '●'} {u.role}
                       </span>
                     </div>
                   </div>

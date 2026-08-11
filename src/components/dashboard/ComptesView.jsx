@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, X, Trash2, User } from 'lucide-react';
 
+const getRoleStyle = (role) => {
+  if (role === 'Dev') return { accent: '#9c27b0', grad: '#b561d4' };
+  if (role === 'Teniente') return { accent: '#000000', grad: '#3a3a3a' };
+  return { accent: '#ff5722', grad: '#ff7a4d' };
+};
+
 export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -32,8 +38,8 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {comptes.map(c => {
-            const isDev = c.role === 'Dev';
-            const accent = isDev ? '#9c27b0' : '#ff5722';
+            const { accent, grad } = getRoleStyle(c.role);
+            const isBlack = accent === '#000000';
             return (
               <div key={c.id} className="rounded-2xl p-5 relative"
                 style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -42,7 +48,7 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
                   style={{ color: '#808080', background: '#121212' }}><Trash2 size={14} /></button>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white text-[15px]"
-                    style={{ background: `linear-gradient(135deg, ${accent}, ${isDev ? '#b561d4' : '#ff7a4d'})` }}>
+                    style={{ background: `linear-gradient(135deg, ${accent}, ${grad})` }}>
                     {c.nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
                   </div>
                   <div className="min-w-0">
@@ -52,8 +58,10 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10.5px] font-medium"
-                    style={{ background: `${accent}1f`, color: accent }}>
-                    {isDev ? '◆' : '●'} {c.role}
+                    style={isBlack
+                      ? { background: '#000', color: '#fff', border: '1px solid rgba(255,255,255,0.25)' }
+                      : { background: `${accent}1f`, color: accent }}>
+                    {c.role === 'Dev' ? '◆' : '●'} {c.role}
                   </span>
                 </div>
               </div>
