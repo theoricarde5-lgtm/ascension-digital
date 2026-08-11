@@ -42,11 +42,11 @@ export default function Dashboard() {
   useEffect(() => { loadAll(); }, [loadAll]);
 
   const addObjet = async (data) => { await base44.entities.Objet.create(data); await loadAll(); };
-  const deleteObjet = async (o) => { await base44.entities.Objet.delete(o.id); await loadAll(); };
+  const deleteObjet = async (o) => { try { await base44.entities.Objet.delete(o.id); } catch (e) {} await loadAll(); };
   const addBijou = async (data) => { await base44.entities.Bijou.create(data); await loadAll(); };
-  const deleteBijou = async (b) => { await base44.entities.Bijou.delete(b.id); await loadAll(); };
+  const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); } catch (e) {} await loadAll(); };
   const addMovement = async (data) => { await base44.entities.Movement.create(data); await loadAll(); };
-  const deleteMovement = async (m) => { await base44.entities.Movement.delete(m.id); await loadAll(); };
+  const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
 
   const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
 
