@@ -7,6 +7,7 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
   const [activeStatut, setActiveStatut] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
   const [rentTarget, setRentTarget] = useState(null);
+  const [returnTarget, setReturnTarget] = useState(null);
 
   const totalUnits = armes.reduce((s, a) => s + (a.quantite || 0), 0);
   const dispo = armes.filter(a => a.statut === 'Disponible').length;
@@ -84,7 +85,7 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
                   style={{ background: '#1a1a1a', color: '#ff7a4d', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <KeyRound size={14} /> {a.statut === 'Loué' ? 'En location' : 'Louer'}
                 </button>
-                <button onClick={() => onReturn(a)} disabled={a.statut !== 'Loué'}
+                <button onClick={() => setReturnTarget(a)} disabled={a.statut !== 'Loué'}
                   className="flex-1 flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold transition-colors disabled:opacity-30"
                   style={{ background: '#1a1a1a', color: '#808080', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <Undo2 size={14} /> Rendre
@@ -101,6 +102,10 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
 
       {rentTarget && (
         <RentModal arme={rentTarget} onClose={() => setRentTarget(null)} onConfirm={(data) => { onRent?.(rentTarget, data); setRentTarget(null); }} />
+      )}
+
+      {returnTarget && (
+        <ReturnModal arme={returnTarget} onClose={() => setReturnTarget(null)} onConfirm={(encaisser) => { onReturn?.(returnTarget, encaisser); setReturnTarget(null); }} />
       )}
 
       <StockHistory movements={movements} keyword="arme" title="Historique des armes" subtitle="Locations et mouvements d'armes" />
@@ -188,6 +193,44 @@ function AddModal({ onClose, onAdd }) {
             <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function ReturnModal({ arme, onClose, onConfirm }) {
+  const [encaisser, setEncaisser] = useState(true);
+  const total = (arme.caution || 0) + (arme.prix_location || 0);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div className="w-full max-w-[420px] rounded-2xl p-6" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h3 className="text-[17px] font-semibold text-white">Rendre — {arme.nom}</h3>
+            <p className="text-[12px] mt-0.5" style={{ color: '#808080' }}>Locataire : {arme.locataire || '—'}</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#808080', background: '#121212' }}><X size={16} /></button>
+        </div>
+        <div className="rounded-xl px-4 py-3 mb-3" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="flex items-center justify-between text-[12px]" style={{ color: '#808080' }}>
+            <span>Caution</span><span style={{ color: '#fff' }}>{arme.caution || 0} $</span>
+          </div>
+          <div className="flex items-center justify-between text-[12px] mt-1" style={{ color: '#808080' }}>
+            <span>Prix location</span><span style={{ color: '#fff' }}>{arme.prix_location || 0} $</span>
+          </div>
+          <div className="flex items-center justify-between text-[13px] font-semibold mt-2 pt-2" style={{ color: '#fff', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+            <span>Total</span><span>{total} $</span>
+          </div>
+        </div>
+        <label className="flex items-center gap-2.5 rounded-xl px-4 py-3 cursor-pointer mb-4" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <input type="checkbox" checked={encaisser} onChange={(e) => setEncaisser(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+          <span className="text-[12.5px]" style={{ color: '#ccc' }}>Encaisser {total} $ dans le coffre</span>
+        </label>
+        <div className="flex justify-end gap-2">
+          <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
+          <button type="button" onClick={() => onConfirm(encaisser)} className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Confirmer le retour</button>
+        </div>
       </div>
     </div>
   );

@@ -154,7 +154,7 @@ export default function Dashboard() {
     } catch (e) {}
     await loadAll();
   };
-  const rendreArme = async (a) => {
+  const rendreArme = async (a, encaisser) => {
     try {
       await base44.entities.Arme.update(a.id, {
         statut: 'Disponible',
@@ -162,13 +162,17 @@ export default function Dashboard() {
         date_debut: '',
         date_retour: '',
       });
-      const total = (a.caution || 0) + (a.prix_location || 0);
-      await base44.entities.Movement.create({
-        type: 'depot',
-        montant: total,
-        note: `Retour arme : ${a.nom} (${a.locataire || ''}) — caution ${a.caution || 0}€ + location ${a.prix_location || 0}€`
-      });
-      await logAction('Retour arme', `${a.nom} — encaissé ${total}€ (caution + location)`);
+      if (encaisser) {
+        const total = (a.caution || 0) + (a.prix_location || 0);
+        await base44.entities.Movement.create({
+          type: 'depot',
+          montant: total,
+          note: `Retour arme : ${a.nom} (${a.locataire || ''}) — caution ${a.caution || 0}€ + location ${a.prix_location || 0}€`
+        });
+        await logAction('Retour arme', `${a.nom} — encaissé ${total}€ (caution + location)`);
+      } else {
+        await logAction('Retour arme', `${a.nom} — sans encaissement`);
+      }
     } catch (e) {}
     await loadAll();
   };
