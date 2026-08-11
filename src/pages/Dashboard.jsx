@@ -15,6 +15,7 @@ import LogsView from '@/components/dashboard/LogsView';
 import SettingsView from '@/components/dashboard/SettingsView';
 import SourcesView from '@/components/dashboard/SourcesView';
 import ArmesView from '@/components/dashboard/ArmesView';
+import CalculateurView from '@/components/dashboard/CalculateurView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -336,6 +337,10 @@ export default function Dashboard() {
 
         {view === 'armes' && (
           <ArmesView armes={armes} onAdd={addArme} onDelete={deleteArme} onRent={louerArme} onReturn={rendreArme} movements={movements} />
+        )}
+
+        {view === 'calculateur' && (
+          <CalculateurView objets={objets} bijoux={bijoux} outils={outils} armes={armes} />
         )}
       </main>
     </div>
