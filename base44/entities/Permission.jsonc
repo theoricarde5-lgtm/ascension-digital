@@ -5,13 +5,25 @@
     "role": {
       "type": "string",
       "enum": [
+        "Administrateur",
         "Jefe",
         "Soldat"
       ]
     },
     "movements": {
       "type": "boolean",
-      "default": false
+      "default": false,
+      "description": "Voir la comptabilit\u00e9 (mouvements)"
+    },
+    "movements_add": {
+      "type": "boolean",
+      "default": false,
+      "description": "Ajouter un mouvement"
+    },
+    "movements_delete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Supprimer un mouvement"
     },
     "objets": {
       "type": "boolean",

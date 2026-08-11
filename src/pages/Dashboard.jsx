@@ -67,11 +67,14 @@ export default function Dashboard() {
     setCategorieBijoux(catBjx);
 
     let perms = await base44.entities.Permission.list('-created_date');
-    if (perms.length === 0) {
-      await base44.entities.Permission.bulkCreate([
-        { role: 'Jefe', movements: true, objets: true, bijoux: true, categories: true, bijouxCategories: true },
-        { role: 'Soldat', movements: false, objets: true, bijoux: true, categories: true, bijouxCategories: true },
-      ]);
+    const existingRoles = perms.map(p => p.role);
+    const defaults = [
+      { role: 'Administrateur', movements: true, movements_add: true, movements_delete: true, objets: true, bijoux: true, categories: true, bijouxCategories: true },
+      { role: 'Jefe', movements: true, movements_add: true, movements_delete: true, objets: true, bijoux: true, categories: true, bijouxCategories: true },
+      { role: 'Soldat', movements: false, movements_add: false, movements_delete: false, objets: true, bijoux: true, categories: true, bijouxCategories: true },
+    ].filter(d => !existingRoles.includes(d.role));
+    if (defaults.length > 0) {
+      await base44.entities.Permission.bulkCreate(defaults);
       perms = await base44.entities.Permission.list('-created_date');
     }
     setPermissions(perms);
@@ -96,7 +99,7 @@ export default function Dashboard() {
   const userName = user?.full_name || 'Fernando Montoya';
 
   const handleAddMovement = async (type, montant, note) => {
-    if (role !== 'Jefe') return;
+    if (!can('movements_add')) return;
     await base44.entities.Movement.create({ type, montant, note });
     await base44.entities.LogEntry.create({
       action: 'Ajout',
@@ -107,7 +110,7 @@ export default function Dashboard() {
   };
 
   const handleDeleteMovement = async (m) => {
-    if (role !== 'Jefe') return;
+    if (!can('movements_delete')) return;
     await base44.entities.Movement.delete(m.id);
     await base44.entities.LogEntry.create({
       action: 'Suppression',
@@ -172,7 +175,8 @@ export default function Dashboard() {
 
   const can = (key) => {
     const p = permissions.find(x => x.role === role);
-    if (!p) return role === 'Jefe';
+    if (!p) return role === 'Jefe' || role === 'Administrateur';
+    if ((key === 'movements_add' || key === 'movements_delete') && p[key] === undefined) return !!p.movements;
     return !!p[key];
   };
 
@@ -226,13 +230,13 @@ export default function Dashboard() {
             <HeroSection solde={solde} totalDepot={totalDepot} totalRetrait={totalRetrait} movementCount={movements.length} userName={userName} />
             <ChipStrip />
             <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-5 items-start max-w-[940px] mx-auto">
-              <MovementsPanel canEdit={can('movements')} movements={movements} onAdd={handleAddMovement} onDelete={handleDeleteMovement} />
+              <MovementsPanel canAdd={can('movements_add')} canDelete={can('movements_delete')} movements={movements} onAdd={handleAddMovement} onDelete={handleDeleteMovement} />
               <SidePanel announcement={announcement} onOpenForm={() => setModalOpen(true)} />
             </div>
           </>
         )}
 
-        {currentView === 'logs' && role === 'Jefe' && <LogsView logs={logs} />}
+        {currentView === 'logs' && (role === 'Jefe' || role === 'Administrateur') && <LogsView logs={logs} />}
 
         {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canEdit={can('objets')} />}
 

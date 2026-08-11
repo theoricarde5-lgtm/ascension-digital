@@ -12,6 +12,7 @@
       "type": "string",
       "description": "R\u00f4le dans la comptabilit\u00e9 du coffre",
       "enum": [
+        "Administrateur",
         "Jefe",
         "Soldat"
       ],

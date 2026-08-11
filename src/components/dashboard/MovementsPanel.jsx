@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { fmt, initials, dateStr } from '@/lib/coffre';
 
-export default function MovementsPanel({ canEdit, movements, onAdd, onDelete }) {
-  const isComptable = canEdit;
+export default function MovementsPanel({ canAdd, canDelete, movements, onAdd, onDelete }) {
   const [type, setType] = useState('depot');
   const [montant, setMontant] = useState('');
   const [note, setNote] = useState('');
@@ -20,14 +19,14 @@ export default function MovementsPanel({ canEdit, movements, onAdd, onDelete }) 
     <div className="rounded-[22px] p-[22px]" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
       <h2 className="font-display text-[15.5px] font-bold mb-4 text-center">Mouvements du coffre</h2>
 
-      {!isComptable && (
+      {!canAdd && !canDelete && (
         <div className="text-[12.5px] mb-4 px-3.5 py-3 rounded-[11px]"
           style={{ color: '#6C6479', background: 'rgba(255,255,255,0.07)', border: '1px dashed rgba(255,255,255,0.10)' }}>
-          🔒 Seul le rôle <b>Jefe</b> peut ajouter ou supprimer un mouvement. Tu es en lecture seule.
+          🔒 Tu n'as pas la permission de modifier la comptabilité. Tu es en lecture seule.
         </div>
       )}
 
-      {isComptable && (
+      {canAdd && (
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-[100px_110px_1fr_auto] gap-2 mb-4">
           <select value={type} onChange={(e) => setType(e.target.value)}
             className="rounded-[11px] px-3 py-2.5 text-[13px]"
@@ -67,7 +66,7 @@ export default function MovementsPanel({ canEdit, movements, onAdd, onDelete }) 
                   {isDepot ? '+' : '-'}{fmt(m.montant)}
                 </div>
               </div>
-              {isComptable && (
+              {canDelete && (
                 <button onClick={() => onDelete(m)} title="Supprimer"
                   className="w-[22px] h-[22px] rounded-[7px] flex-none flex items-center justify-center ml-2 text-xs"
                   style={{ color: '#6C6479' }}>✕</button>
