@@ -13,6 +13,7 @@ import PermissionsView from '@/components/dashboard/PermissionsView';
 import ComptesView from '@/components/dashboard/ComptesView';
 import LogsView from '@/components/dashboard/LogsView';
 import SettingsView from '@/components/dashboard/SettingsView';
+import SourcesView from '@/components/dashboard/SourcesView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -274,6 +275,10 @@ export default function Dashboard() {
 
         {view === 'parametres' && (
           <SettingsView currentUser={currentUser} onChangePassword={changePassword} onUpdateProfile={updateProfile} />
+        )}
+
+        {view === 'groupes' && (
+          <SourcesView sources={sources} />
         )}
       </main>
     </div>

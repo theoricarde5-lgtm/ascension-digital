@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -83,6 +83,13 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'coffre' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Wallet size={20} />
+        </button>
+
+        {/* Groupes - top level */}
+        <button onClick={() => onNavigate?.('groupes')} title="Groupes"
+          className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
+          style={active === 'groupes' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
+          <Tags size={20} />
         </button>
 
         {/* Separator */}
