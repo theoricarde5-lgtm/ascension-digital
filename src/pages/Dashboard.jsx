@@ -11,6 +11,7 @@ import CoffreView from '@/components/dashboard/CoffreView';
 import OutilsView from '@/components/dashboard/OutilsView';
 import PermissionsView from '@/components/dashboard/PermissionsView';
 import ComptesView from '@/components/dashboard/ComptesView';
+import LogsView from '@/components/dashboard/LogsView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function Dashboard() {
   const [catOutils, setCatOutils] = useState([]);
   const [roles, setRoles] = useState([]);
   const [comptes, setComptes] = useState([]);
+  const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -35,9 +37,16 @@ export default function Dashboard() {
     } catch (e) {}
   }, []);
 
+  const logAction = useCallback(async (action, details = '') => {
+    try {
+      const user = currentUser?.nom || 'Inconnu';
+      await base44.entities.Log.create({ action, details, user });
+    } catch (e) {}
+  }, [currentUser]);
+
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg] = await Promise.all([
         base44.entities.Objet.list('-created_date', 50),
         base44.entities.Bijou.list('-created_date', 50),
         base44.entities.Categorie.list(),
@@ -47,6 +56,7 @@ export default function Dashboard() {
         base44.entities.CategorieOutil.list(),
         base44.entities.Role.list('-created_date', 50),
         base44.entities.Compte.list('-created_date', 50),
+        base44.entities.Log.list('-created_date', 100),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -57,6 +67,7 @@ export default function Dashboard() {
       setCatOutils(co);
       setRoles(rl);
       setComptes(cp);
+      setLogs(lg);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -90,15 +101,16 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.CategorieOutil, setCatOutils),
       subscribeEntity(base44.entities.Role, setRoles),
       subscribeEntity(base44.entities.Compte, setComptes),
+      subscribeEntity(base44.entities.Log, setLogs),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
 
-  const addRole = async (data) => { await base44.entities.Role.create(data); await loadAll(); };
+  const addRole = async (data) => { await base44.entities.Role.create(data); await logAction('Création rôle', `Rôle "${data.nom}" créé`); await loadAll(); };
   const updateRole = async (id, data) => { try { await base44.entities.Role.update(id, data); } catch (e) {} await loadAll(); };
-  const deleteRole = async (r) => { try { await base44.entities.Role.delete(r.id); } catch (e) {} await loadAll(); };
-  const addCompte = async (data) => { await base44.entities.Compte.create(data); await loadAll(); };
-  const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); } catch (e) {} await loadAll(); };
+  const deleteRole = async (r) => { try { await base44.entities.Role.delete(r.id); await logAction('Suppression rôle', `Rôle "${r.nom}" supprimé`); } catch (e) {} await loadAll(); };
+  const addCompte = async (data) => { await base44.entities.Compte.create(data); await logAction('Création compte', `Compte "${data.nom}" (${data.matricule}) — ${data.role}`); await loadAll(); };
+  const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); await logAction('Suppression compte', `Compte "${c.nom}" (${c.matricule}) supprimé`); } catch (e) {} await loadAll(); };
 
   const addObjet = async (data) => {
     await base44.entities.Objet.create(data);
@@ -109,9 +121,10 @@ export default function Dashboard() {
         note: `Achat objet : ${data.nom}${data.categorie ? ` (${data.categorie})` : ''}`
       });
     } catch (e) {}
+    await logAction('Ajout objet', `${data.nom}${data.categorie ? ` (${data.categorie})` : ''} — ${data.quantite || 0} × ${data.prix || 0}€`);
     await loadAll();
   };
-  const deleteObjet = async (o) => { try { await base44.entities.Objet.delete(o.id); } catch (e) {} await loadAll(); };
+  const deleteObjet = async (o) => { try { await base44.entities.Objet.delete(o.id); await logAction('Suppression objet', `${o.nom}`); } catch (e) {} await loadAll(); };
   const addBijou = async (data) => {
     await base44.entities.Bijou.create(data);
     try {
@@ -121,11 +134,12 @@ export default function Dashboard() {
         note: `Achat bijou : ${data.nom}${data.categorie ? ` (${data.categorie})` : ''}`
       });
     } catch (e) {}
+    await logAction('Ajout bijou', `${data.nom}${data.categorie ? ` (${data.categorie})` : ''} — ${data.quantite || 0} × ${data.prix || 0}€`);
     await loadAll();
   };
-  const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); } catch (e) {} await loadAll(); };
-  const addMovement = async (data) => { await base44.entities.Movement.create(data); await loadAll(); };
-  const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); } catch (e) {} await loadAll(); };
+  const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); await logAction('Suppression bijou', `${b.nom}`); } catch (e) {} await loadAll(); };
+  const addMovement = async (data) => { await base44.entities.Movement.create(data); await logAction(data.type === 'depot' ? 'Dépôt coffre' : 'Retrait coffre', `${data.montant}€${data.note ? ` — ${data.note}` : ''}`); await loadAll(); };
+  const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); await logAction('Suppression mouvement', `${m.type} ${m.montant}€`); } catch (e) {} await loadAll(); };
   const addOutil = async (data) => {
     const existing = outils.find(o => o.nom.trim().toLowerCase() === (data.nom || '').trim().toLowerCase());
     if (existing) {
@@ -141,9 +155,10 @@ export default function Dashboard() {
     } else {
       await base44.entities.Outil.create(data);
     }
+    await logAction('Ajout outil', `${data.nom}${data.categorie ? ` (${data.categorie})` : ''} — ${data.quantite || 0} × ${data.prix || 0}€`);
     await loadAll();
   };
-  const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); } catch (e) {} await loadAll(); };
+  const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); await logAction('Suppression outil', `${o.nom}`); } catch (e) {} await loadAll(); };
   const sellOutil = async (o, qte, prix) => {
     const qty = Math.max(1, parseInt(qte) || 1);
     const newQte = Math.max(0, (o.quantite || 0) - qty);
@@ -159,6 +174,7 @@ export default function Dashboard() {
         montant: salePrice * qty,
         note: `Vente outil : ${o.nom} (x${qty})`
       });
+      await logAction('Vente outil', `${o.nom} (x${qty}) — ${salePrice * qty}€`);
     } catch (e) {}
     await loadAll();
   };
@@ -210,6 +226,10 @@ export default function Dashboard() {
 
         {view === 'comptes' && (
           <ComptesView comptes={comptes} onAdd={addCompte} onDelete={deleteCompte} />
+        )}
+
+        {view === 'logs' && currentUser?.role === 'Dev' && (
+          <LogsView logs={logs} />
         )}
       </main>
     </div>
