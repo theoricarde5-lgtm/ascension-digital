@@ -3,7 +3,7 @@
 --  Remplace SITE_URL par l'URL publique de ton site publié
 -- =========================================================
 
-local SITE_URL = 'https://TON-SITE.base44.app' -- ⚠️ À REMPLACER
+local SITE_URL = 'https://comptamontoya.com'
 local TOGGLE_KEY = 'F6' -- Touche pour ouvrir/fermer (voir https://docs.fivem.net/docs/game-references/controls/)
 local isOpen = false
 
@@ -22,7 +22,7 @@ local function toggleNUI()
   SendNUIMessage({
     type = isOpen and 'open' or 'close'
   })
-end)
+end
 
 -- Touche d'ouverture
 RegisterCommand('montoya', function()
