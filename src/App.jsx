@@ -8,7 +8,6 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import Dashboard from '@/pages/Dashboard';
 import LoginPage from '@/pages/LoginPage';
-import FivemResource from '@/pages/FivemResource';
 // Add page imports here
 
 const AuthenticatedApp = () => {
@@ -32,7 +31,6 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/fivem" element={<FivemResource />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
