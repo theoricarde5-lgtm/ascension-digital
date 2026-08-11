@@ -12,6 +12,7 @@ import OutilsView from '@/components/dashboard/OutilsView';
 import PermissionsView from '@/components/dashboard/PermissionsView';
 import ComptesView from '@/components/dashboard/ComptesView';
 import LogsView from '@/components/dashboard/LogsView';
+import SettingsView from '@/components/dashboard/SettingsView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -230,6 +231,10 @@ export default function Dashboard() {
 
         {view === 'logs' && currentUser?.role === 'Dev' && (
           <LogsView logs={logs} />
+        )}
+
+        {view === 'parametres' && (
+          <SettingsView currentUser={currentUser} />
         )}
       </main>
     </div>

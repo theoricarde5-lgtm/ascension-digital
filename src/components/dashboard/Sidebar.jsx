@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -83,6 +83,16 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'coffre' ? { background: '#ff5722', color: '#fff' } : { color: '#808080' }}>
           <Wallet size={20} />
+        </button>
+
+        {/* Separator */}
+        <div className="w-8 h-px my-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
+
+        {/* Paramètres - visible to all */}
+        <button onClick={() => onNavigate?.('parametres')} title="Paramètres"
+          className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
+          style={active === 'parametres' ? { background: '#ff5722', color: '#fff' } : { color: '#808080' }}>
+          <Settings size={20} />
         </button>
 
         {/* Dev section - separated, dropdown */}

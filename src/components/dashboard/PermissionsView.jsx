@@ -7,6 +7,7 @@ export const VIEWS = [
   { id: 'bijoux', label: 'Bijoux' },
   { id: 'outils', label: 'Stock Outils' },
   { id: 'coffre', label: 'Coffre' },
+  { id: 'parametres', label: 'Paramètres' },
   { id: 'permissions', label: 'Permissions' },
 ];
 
