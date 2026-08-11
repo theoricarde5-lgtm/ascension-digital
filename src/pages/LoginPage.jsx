@@ -15,9 +15,11 @@ export default function LoginPage() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
+  const GRADE_ORDER = { Dev: 0, Teniente: 1, Capitaine: 2, Membre: 3 };
+
   useEffect(() => {
     base44.entities.Compte.list('-created_date', 50)
-      .then(setUsers)
+      .then(list => setUsers([...list].sort((a, b) => (GRADE_ORDER[a.role] ?? 9) - (GRADE_ORDER[b.role] ?? 9) || a.nom.localeCompare(b.nom))))
       .catch(() => setUsers([]));
   }, []);
 
