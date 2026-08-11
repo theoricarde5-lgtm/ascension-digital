@@ -69,9 +69,9 @@ export default function Dashboard() {
     let perms = await base44.entities.Permission.list('-created_date');
     const existingRoles = perms.map(p => p.role);
     const defaults = [
-      { role: 'Administrateur', movements: true, movements_add: true, movements_delete: true, objets: true, bijoux: true, categories: true, bijouxCategories: true },
-      { role: 'Jefe', movements: true, movements_add: true, movements_delete: true, objets: true, bijoux: true, categories: true, bijouxCategories: true },
-      { role: 'Soldat', movements: false, movements_add: false, movements_delete: false, objets: true, bijoux: true, categories: true, bijouxCategories: true },
+      { role: 'Administrateur', movements: true, movements_add: true, movements_delete: true, objets: true, objets_add: true, objets_delete: true, bijoux: true, bijoux_add: true, bijoux_delete: true, categories: true, categories_add: true, categories_delete: true, bijouxCategories: true, bijouxCategories_add: true, bijouxCategories_delete: true },
+      { role: 'Jefe', movements: true, movements_add: true, movements_delete: true, objets: true, objets_add: true, objets_delete: true, bijoux: true, bijoux_add: true, bijoux_delete: true, categories: true, categories_add: true, categories_delete: true, bijouxCategories: true, bijouxCategories_add: true, bijouxCategories_delete: true },
+      { role: 'Soldat', movements: false, movements_add: false, movements_delete: false, objets: true, objets_add: false, objets_delete: false, bijoux: true, bijoux_add: false, bijoux_delete: false, categories: true, categories_add: false, categories_delete: false, bijouxCategories: true, bijouxCategories_add: false, bijouxCategories_delete: false },
     ].filter(d => !existingRoles.includes(d.role));
     if (defaults.length > 0) {
       await base44.entities.Permission.bulkCreate(defaults);
@@ -176,7 +176,10 @@ export default function Dashboard() {
   const can = (key) => {
     const p = permissions.find(x => x.role === role);
     if (!p) return role === 'Jefe' || role === 'Administrateur';
-    if ((key === 'movements_add' || key === 'movements_delete') && p[key] === undefined) return !!p.movements;
+    if ((key.endsWith('_add') || key.endsWith('_delete')) && p[key] === undefined) {
+      const base = key.replace(/_(add|delete)$/, '');
+      return !!p[base];
+    }
     return !!p[key];
   };
 
@@ -238,17 +241,17 @@ export default function Dashboard() {
 
         {currentView === 'logs' && (role === 'Jefe' || role === 'Administrateur') && <LogsView logs={logs} />}
 
-        {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canEdit={can('objets')} />}
+        {currentView === 'objets' && <ObjetsView objets={objets} categories={categories} onAdd={handleAddObjet} onDelete={handleDeleteObjet} canAdd={can('objets_add')} canDelete={can('objets_delete')} />}
 
         {currentView === 'inventaire' && <InventoryView objets={objets} />}
 
-        {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} canEdit={can('categories')} />}
+        {currentView === 'categories' && <CategoriesView categories={categories} onAdd={handleAddCategorie} onDelete={handleDeleteCategorie} canAdd={can('categories_add')} canDelete={can('categories_delete')} />}
 
-        {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} canEdit={can('bijoux')} />}
+        {currentView === 'bijoux' && <BijouxView bijoux={bijoux} categories={categorieBijoux} onAdd={handleAddBijou} onDelete={handleDeleteBijou} canAdd={can('bijoux_add')} canDelete={can('bijoux_delete')} />}
 
         {currentView === 'bijoux-inventaire' && <BijouxInventoryView bijoux={bijoux} />}
 
-        {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} canEdit={can('bijouxCategories')} />}
+        {currentView === 'bijoux-categories' && <BijouxCategoriesView categories={categorieBijoux} onAdd={handleAddCategorieBijou} onDelete={handleDeleteCategorieBijou} canAdd={can('bijouxCategories_add')} canDelete={can('bijouxCategories_delete')} />}
 
         {currentView === 'requests' && <RequestsView requests={requests} />}
 

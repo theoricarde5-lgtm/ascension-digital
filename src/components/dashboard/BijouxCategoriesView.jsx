@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function BijouxCategoriesView({ categories, onAdd, onDelete, canEdit }) {
+export default function BijouxCategoriesView({ categories, onAdd, onDelete, canAdd, canDelete }) {
   const [nom, setNom] = useState('');
 
   const handleSubmit = (e) => {
@@ -19,7 +19,7 @@ export default function BijouxCategoriesView({ categories, onAdd, onDelete, canE
         <p className="text-[13.5px] mt-1" style={{ color: '#A79FB5' }}>Nomme tes catégories de bijoux manuellement.</p>
       </div>
 
-      {canEdit && (
+      {canAdd && (
       <form onSubmit={handleSubmit} className="rounded-[22px] p-[22px] mb-5 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
         <div className="flex-1">
@@ -43,7 +43,7 @@ export default function BijouxCategoriesView({ categories, onAdd, onDelete, canE
             <div key={c.id} className="flex items-center gap-2 rounded-full pl-3.5 pr-2 py-1.5"
               style={{ background: 'rgba(139,92,246,0.14)', border: '1px solid rgba(139,92,246,0.25)' }}>
               <span className="text-[13px] font-semibold" style={{ color: '#C7B3FA' }}>{c.nom}</span>
-              {canEdit && (
+              {canDelete && (
               <button onClick={() => onDelete(c)} title="Supprimer"
                 className="w-[20px] h-[20px] rounded-full flex items-center justify-center text-xs"
                 style={{ color: '#C7B3FA', background: 'rgba(255,255,255,0.06)' }}>✕</button>

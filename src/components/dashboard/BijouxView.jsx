@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { fmt } from '@/lib/coffre';
 
-export default function BijouxView({ bijoux, categories, onAdd, onDelete, canEdit }) {
+export default function BijouxView({ bijoux, categories, onAdd, onDelete, canAdd, canDelete }) {
   const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '' });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,7 +28,7 @@ export default function BijouxView({ bijoux, categories, onAdd, onDelete, canEdi
         <p className="text-[13.5px] mt-1" style={{ color: '#A79FB5' }}>Ajoute et consulte tes bijoux manuellement.</p>
       </div>
 
-      {canEdit && (
+      {canAdd && (
       <form onSubmit={handleSubmit}
         className="rounded-[22px] p-[22px] mb-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
@@ -61,7 +61,7 @@ export default function BijouxView({ bijoux, categories, onAdd, onDelete, canEdi
           {bijoux.map(o => (
             <div key={o.id} className="rounded-[22px] p-[18px] relative"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.10)' }}>
-              {canEdit && (
+              {canDelete && (
               <button onClick={() => onDelete(o)} title="Supprimer"
                 className="absolute top-3 right-3 w-[22px] h-[22px] rounded-[7px] flex items-center justify-center text-xs"
                 style={{ color: '#6C6479' }}>✕</button>

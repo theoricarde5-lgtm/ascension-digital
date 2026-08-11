@@ -18,12 +18,35 @@ const GROUPS = [
     ],
   },
   {
-    title: 'Inventaire',
+    title: 'Objets',
     perms: [
-      { key: 'objets', label: 'Objets' },
-      { key: 'bijoux', label: 'Bijoux' },
-      { key: 'categories', label: 'Catégories' },
-      { key: 'bijouxCategories', label: 'Cat. Bijoux' },
+      { key: 'objets', label: 'Voir les objets' },
+      { key: 'objets_add', label: 'Ajouter un objet' },
+      { key: 'objets_delete', label: 'Supprimer un objet' },
+    ],
+  },
+  {
+    title: 'Bijoux',
+    perms: [
+      { key: 'bijoux', label: 'Voir les bijoux' },
+      { key: 'bijoux_add', label: 'Ajouter un bijou' },
+      { key: 'bijoux_delete', label: 'Supprimer un bijou' },
+    ],
+  },
+  {
+    title: 'Catégories',
+    perms: [
+      { key: 'categories', label: 'Voir les catégories' },
+      { key: 'categories_add', label: 'Ajouter une catégorie' },
+      { key: 'categories_delete', label: 'Supprimer une catégorie' },
+    ],
+  },
+  {
+    title: 'Catégories Bijoux',
+    perms: [
+      { key: 'bijouxCategories', label: 'Voir les catégories' },
+      { key: 'bijouxCategories_add', label: 'Ajouter une catégorie' },
+      { key: 'bijouxCategories_delete', label: 'Supprimer une catégorie' },
     ],
   },
 ];
