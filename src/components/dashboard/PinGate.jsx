@@ -1,56 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Delete } from 'lucide-react';
-
-const PIN_KEY = 'montoya_pin';
-const UNLOCK_KEY = 'montoya_pin_unlocked';
-const DEFAULT_PIN = '2702';
+import { base44 } from '@/api/base44Client';
 
 export default function PinGate({ children }) {
   const [unlocked, setUnlocked] = useState(false);
-  const [checking, setChecking] = useState(true);
   const [entry, setEntry] = useState('');
   const [error, setError] = useState(false);
+  const [checking, setChecking] = useState(false);
 
-  useEffect(() => {
-    if (sessionStorage.getItem(UNLOCK_KEY) === '1') setUnlocked(true);
-    setChecking(false);
-  }, []);
-
-  const handleSubmit = (e) => {
-    e?.preventDefault();
-    const pin = localStorage.getItem(PIN_KEY) || DEFAULT_PIN;
-    if (entry === pin) {
-      sessionStorage.setItem(UNLOCK_KEY, '1');
-      setUnlocked(true);
-      setError(false);
-    } else {
+  const verify = async (value) => {
+    setChecking(true);
+    try {
+      const res = await base44.functions.invoke('verifyCoffrePin', { pin: value });
+      if (res.data?.valid) {
+        setUnlocked(true);
+        setError(false);
+      } else {
+        setError(true);
+        setEntry('');
+      }
+    } catch (e) {
       setError(true);
       setEntry('');
+    } finally {
+      setChecking(false);
     }
   };
 
+  const handleSubmit = (e) => {
+    e?.preventDefault();
+    if (entry.length < 4) return;
+    verify(entry);
+  };
+
   const press = (d) => {
-    if (entry.length >= 6) return;
+    if (entry.length >= 6 || checking) return;
     const next = entry + d;
     setEntry(next);
     setError(false);
     if (next.length === 4) {
-      setTimeout(() => {
-        const pin = localStorage.getItem(PIN_KEY) || DEFAULT_PIN;
-        if (next === pin) {
-          sessionStorage.setItem(UNLOCK_KEY, '1');
-          setUnlocked(true);
-        } else {
-          setError(true);
-          setEntry('');
-        }
-      }, 120);
+      setTimeout(() => verify(next), 120);
     }
   };
 
   const back = () => { setEntry(entry.slice(0, -1)); setError(false); };
 
-  if (checking) return null;
   if (unlocked) return children;
 
   return (
@@ -77,16 +71,16 @@ export default function PinGate({ children }) {
 
         <div className="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
           {['1','2','3','4','5','6','7','8','9'].map(d => (
-            <button key={d} type="button" onClick={() => press(d)}
-              className="h-[58px] rounded-[14px] font-display text-[20px] font-semibold transition-colors"
+            <button key={d} type="button" disabled={checking} onClick={() => press(d)}
+              className="h-[58px] rounded-[14px] font-display text-[20px] font-semibold transition-colors disabled:opacity-50"
               style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)' }}>{d}</button>
           ))}
           <div />
-          <button type="button" onClick={() => press('0')}
-            className="h-[58px] rounded-[14px] font-display text-[20px] font-semibold transition-colors"
+          <button type="button" disabled={checking} onClick={() => press('0')}
+            className="h-[58px] rounded-[14px] font-display text-[20px] font-semibold transition-colors disabled:opacity-50"
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)' }}>0</button>
-          <button type="button" onClick={back}
-            className="h-[58px] rounded-[14px] flex items-center justify-center transition-colors"
+          <button type="button" disabled={checking} onClick={back}
+            className="h-[58px] rounded-[14px] flex items-center justify-center transition-colors disabled:opacity-50"
             style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', color: '#A79FB5' }}>
             <Delete size={20} />
           </button>
