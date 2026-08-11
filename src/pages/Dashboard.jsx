@@ -16,6 +16,7 @@ import CategoriesView from '@/components/dashboard/CategoriesView';
 import BijouxView from '@/components/dashboard/BijouxView';
 import BijouxInventoryView from '@/components/dashboard/BijouxInventoryView';
 import BijouxCategoriesView from '@/components/dashboard/BijouxCategoriesView';
+import PinGate from '@/components/dashboard/PinGate';
 import { fmt } from '@/lib/coffre';
 
 export default function Dashboard() {
@@ -153,6 +154,7 @@ export default function Dashboard() {
   }
 
   return (
+    <PinGate>
     <div className="min-h-screen relative" style={{ background: '#0D0B12', color: '#F5F3F9', fontFamily: "'Inter', sans-serif" }}>
       <div className="fixed -top-[260px] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full pointer-events-none z-0"
         style={{ background: 'linear-gradient(120deg, #8B5CF6, #F472B6)', opacity: 0.14, filter: 'blur(120px)' }} />
@@ -197,5 +199,6 @@ export default function Dashboard() {
       <RequestModal open={modalOpen} onClose={() => setModalOpen(false)} onSubmit={handleSubmitRequest} />
       <Toast show={toast.show} message={toast.message} />
     </div>
+    </PinGate>
   );
 }
