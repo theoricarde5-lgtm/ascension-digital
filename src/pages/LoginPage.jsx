@@ -4,22 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
 const USERS = [
-  { matricule: 'JD', nom: 'Julio Delgado', role: 'Patron' },
-  { matricule: 'PH', nom: 'Paco Hernandez', role: 'Co-Patron' },
-  { matricule: 'ZS', nom: 'Zéphyr Sterling', role: 'Responsable Event' },
-  { matricule: 'KD', nom: 'Keyla Delgado', role: 'Responsable' },
-  { matricule: 'SU', nom: 'Shkëlze Uka', role: 'Responsable' },
-  { matricule: 'DF', nom: 'Demetrius Flenory', role: 'Vendeur/euse Supérieur(e)' },
-  { matricule: 'IB', nom: 'Issa Blackys', role: 'Vendeur/euse Supérieur(e)' },
-  { matricule: 'JM', nom: 'Jason Montelis', role: 'Vendeur/euse Supérieur(e)' },
-  { matricule: 'MR', nom: 'Malik Reed', role: 'Vendeur/euse Supérieur(e)' },
-  { matricule: 'JC', nom: 'Joe Cortes', role: 'Vendeur/euse' },
-  { matricule: 'SV', nom: 'Soren Veyron', role: 'Vendeur/euse' },
-  { matricule: 'HH', nom: 'Hakime Hernandez', role: 'Vendeur/euse Novice' },
-  { matricule: 'IU', nom: 'Isalia Uka', role: 'Vendeur/euse Novice' },
-  { matricule: 'NN', nom: 'Noah Norev', role: 'Vendeur/euse Novice' },
-  { matricule: 'SW', nom: 'Stella West', role: 'Vendeur/euse Novice' },
-  { matricule: 'JW', nom: 'Jordan Wallace', role: 'Vendeur/euse Novice' },
+  { matricule: 'FERNANDO', nom: 'Fernando', role: 'Dev' },
 ];
 
 const initials = (nom) => nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
