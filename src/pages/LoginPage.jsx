@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, ArrowRight } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 import { base44 } from '@/api/base44Client';
-
-const USERS = [
-  { matricule: 'FERNANDO', nom: 'Fernando', role: 'Dev' },
-  { matricule: 'TEA', nom: 'Téa', role: 'Membre' },
-];
 
 const initials = (nom) => nom.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
 
@@ -17,7 +12,14 @@ export default function LoginPage() {
   const [showPwd, setShowPwd] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    base44.entities.Compte.list('-created_date', 50)
+      .then(setUsers)
+      .catch(() => setUsers([]));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -123,7 +125,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3">
-            {USERS.map(u => {
+            {users.map(u => {
               const selected = matricule === u.matricule;
               const isDev = u.role === 'Dev';
               const accent = isDev ? '#9c27b0' : '#ff473a';
