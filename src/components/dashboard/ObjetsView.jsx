@@ -145,9 +145,11 @@ export function AddModal({ categories, onClose, onAdd, title }) {
               className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
           </div>
           <div className="col-span-2">
-            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Vendeur (à qui on l'achète)</label>
-            <input name="vendeur" value={form.vendeur} onChange={handleChange} placeholder="Ex : Galerie Dupont"
-              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Racheté à</label>
+            <select name="vendeur" value={form.vendeur} onChange={handleChange} className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
+              <option value="">— Choisir —</option>
+              {['SBC', 'CBLOCK', 'HTB', 'BLOODLINE', 'CUARDRA', 'MADRAZO'].map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
           </div>
           <div className="col-span-2">
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Description</label>
@@ -156,7 +158,7 @@ export function AddModal({ categories, onClose, onAdd, title }) {
           </div>
           <div className="col-span-2 flex justify-end gap-2 mt-1">
             <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
-            <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: '#ff5722' }}>Ajouter</button>
+            <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
           </div>
         </form>
       </div>
