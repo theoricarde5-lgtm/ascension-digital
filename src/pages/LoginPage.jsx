@@ -142,9 +142,11 @@ export default function LoginPage() {
                     : { background: '#141417', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{ background: `radial-gradient(circle at top right, ${accent}14, transparent 60%)` }} />
-                  <div className="relative w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0"
-                    style={{ background: `linear-gradient(135deg, ${accent}, ${grad})` }}>
-                    {initials(u.nom)}
+                  <div className="relative w-12 h-12 rounded-xl flex items-center justify-center font-bold text-white text-[15px] shrink-0 overflow-hidden"
+                    style={{ background: u.photo ? '#141417' : `linear-gradient(135deg, ${accent}, ${grad})` }}>
+                    {u.photo
+                      ? <Image src={u.photo} fittingType="fill" quality={100} className="w-full h-full" />
+                      : initials(u.nom)}
                   </div>
                   <div className="relative flex-1 min-w-0 text-left">
                     <div className="text-[13.5px] font-semibold text-white truncate">{u.nom}</div>

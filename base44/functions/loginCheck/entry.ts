@@ -15,7 +15,7 @@ export default async function(req) {
     if (!compte) return Response.json({ ok: false, error: 'Matricule inconnu' }, { status: 401 });
     if (password !== compte.password) return Response.json({ ok: false, error: 'Mot de passe incorrect' }, { status: 401 });
 
-    return Response.json({ ok: true, user: { matricule: compte.matricule, nom: compte.nom, role: compte.role } });
+    return Response.json({ ok: true, user: { matricule: compte.matricule, nom: compte.nom, role: compte.role, couleur: compte.couleur, photo: compte.photo } });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
