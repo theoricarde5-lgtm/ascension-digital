@@ -194,8 +194,12 @@ function AddModal({ onClose, onAdd }) {
 }
 
 function RentModal({ arme, onClose, onConfirm }) {
-  const [form, setForm] = useState({ locataire: '', date_debut: '', date_retour: '', caution: arme.caution || '' });
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const [form, setForm] = useState({ locataire: '', date_debut: '', date_retour: '', caution: arme.caution || '', encaisser_location: false });
+  const handleChange = (e) => {
+    const target = e.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    setForm({ ...form, [target.name]: value });
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.locataire.trim()) return;
@@ -204,6 +208,7 @@ function RentModal({ arme, onClose, onConfirm }) {
       date_debut: form.date_debut,
       date_retour: form.date_retour,
       caution: parseFloat(form.caution) || 0,
+      encaisser_location: form.encaisser_location,
     });
   };
   const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
@@ -239,6 +244,11 @@ function RentModal({ arme, onClose, onConfirm }) {
             <input type="number" name="caution" value={form.caution} onChange={handleChange} placeholder="0"
               className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
           </div>
+          <label className="col-span-2 flex items-center gap-2.5 rounded-xl px-4 py-3 cursor-pointer" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <input type="checkbox" name="encaisser_location" checked={form.encaisser_location} onChange={handleChange}
+              className="w-4 h-4 accent-orange-500" />
+            <span className="text-[12.5px]" style={{ color: '#ccc' }}>Encaisser le prix de location ({arme.prix_location || 0} $) maintenant</span>
+          </label>
           <div className="col-span-2 flex justify-end gap-2 mt-1">
             <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
             <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Confirmer la location</button>

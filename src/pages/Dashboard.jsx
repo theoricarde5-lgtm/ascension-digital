@@ -150,10 +150,11 @@ export default function Dashboard() {
         date_retour: data.date_retour,
         caution: data.caution,
       });
+      const montantDepot = (data.caution || 0) + (data.encaisser_location ? (a.prix_location || 0) : 0);
       await base44.entities.Movement.create({
         type: 'depot',
-        montant: (data.caution || 0) + (a.prix_location || 0),
-        note: `Location arme : ${a.nom} → ${data.locataire}`
+        montant: montantDepot,
+        note: `Location arme : ${a.nom} → ${data.locataire}${data.encaisser_location ? '' : ' (location non encaissée)'}`
       });
       await logAction('Location arme', `${a.nom} → ${data.locataire}`);
     } catch (e) {}
