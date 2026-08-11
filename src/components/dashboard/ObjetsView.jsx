@@ -67,6 +67,7 @@ export default function ObjetsView({ objets, categories, onAdd, onDelete }) {
               <div className="text-[10.5px] font-bold uppercase tracking-wider mb-1.5 pr-8" style={{ color: '#808080' }}>{o.categorie || 'Sans catégorie'}</div>
               <div className="text-[16px] font-semibold text-white mb-1">{o.nom}</div>
               {o.description && <div className="text-[12.5px] leading-snug mb-3" style={{ color: '#808080' }}>{o.description}</div>}
+              {o.vendeur && <div className="text-[11.5px] mt-2 flex items-center gap-1.5" style={{ color: '#808080' }}><span style={{ color: '#666' }}>Vendeur :</span> {o.vendeur}</div>}
               <div className="flex items-center justify-between mt-3">
                 <div className="text-[15px] font-bold text-white">{o.prix ? `${o.prix} $` : '—'}</div>
                 {o.quantite ? <div className="text-[11px]" style={{ color: '#808080' }}>Qté : {o.quantite}</div> : null}
@@ -94,7 +95,7 @@ function Pill({ label, active, onClick }) {
 }
 
 export function AddModal({ categories, onClose, onAdd, title }) {
-  const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '' });
+  const [form, setForm] = useState({ nom: '', categorie: '', prix: '', quantite: '', description: '', vendeur: '' });
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -105,6 +106,7 @@ export function AddModal({ categories, onClose, onAdd, title }) {
       description: form.description.trim(),
       prix: parseFloat(form.prix) || 0,
       quantite: parseInt(form.quantite) || 0,
+      vendeur: form.vendeur.trim(),
     });
   };
   const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
@@ -137,6 +139,11 @@ export function AddModal({ categories, onClose, onAdd, title }) {
           <div>
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Quantité</label>
             <input name="quantite" type="number" value={form.quantite} onChange={handleChange} placeholder="0"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Vendeur (à qui on l'achète)</label>
+            <input name="vendeur" value={form.vendeur} onChange={handleChange} placeholder="Ex : Galerie Dupont"
               className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
           </div>
           <div className="col-span-2">

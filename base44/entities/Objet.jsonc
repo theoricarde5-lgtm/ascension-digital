@@ -28,6 +28,9 @@
         "Vendu"
       ],
       "default": "Disponible"
+    },
+    "vendeur": {
+      "type": "string"
     }
   },
   "required": [
