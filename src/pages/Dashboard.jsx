@@ -140,9 +140,12 @@ export default function Dashboard() {
     await base44.auth.logout();
   };
 
-  const solde = movements.reduce((s, m) => s + (m.type === 'depot' ? m.montant : -m.montant), 0);
+  const soldeMov = movements.reduce((s, m) => s + (m.type === 'depot' ? m.montant : -m.montant), 0);
   const totalDepot = movements.filter(m => m.type === 'depot').reduce((s, m) => s + m.montant, 0);
   const totalRetrait = movements.filter(m => m.type === 'retrait').reduce((s, m) => s + m.montant, 0);
+  const valeurObjets = objets.reduce((s, o) => s + (o.prix || 0) * (o.quantite || 0), 0);
+  const valeurBijoux = bijoux.reduce((s, b) => s + (b.prix || 0) * (b.quantite || 0), 0);
+  const solde = soldeMov + valeurObjets + valeurBijoux;
 
   if (loading) {
     return (
