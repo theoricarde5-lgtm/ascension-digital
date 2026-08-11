@@ -49,7 +49,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
             <label className="block text-[12px] font-medium mb-1.5" style={{ color: '#808080' }}>Matricule</label>
-            <input value={matricule} onChange={(e) => setMatricule(e.target.value.toUpperCase())} required placeholder="Ex : ZEN"
+            <input value={matricule} onChange={(e) => setMatricule(e.target.value.toUpperCase())} required placeholder="Fernando"
               className="w-full rounded-xl px-3.5 py-3 text-[14px] outline-none" style={{ background: '#0f1115', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' }} />
           </div>
           <div>
