@@ -224,6 +224,13 @@ export default function Dashboard() {
     await loadAll();
   };
   const deleteOutil = async (o) => { try { await base44.entities.Outil.delete(o.id); await logAction('Suppression outil', `${o.nom}`); } catch (e) {} await loadAll(); };
+  const updateOutil = async (o, data) => {
+    try {
+      await base44.entities.Outil.update(o.id, data);
+      await logAction('Modification outil', `${o.nom} → prix ${data.prix}€ · qté ${data.quantite}`);
+    } catch (e) {}
+    await loadAll();
+  };
   const sellOutil = async (o, qte, prix) => {
     const qty = Math.max(1, parseInt(qte) || 1);
     const newQte = Math.max(0, (o.quantite || 0) - qty);
@@ -320,7 +327,7 @@ export default function Dashboard() {
         )}
 
         {view === 'outils' && (
-          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} movements={movements} />
+          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} onUpdate={updateOutil} movements={movements} />
         )}
 
         {view === 'coffre' && (

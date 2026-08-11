@@ -2,11 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { Search, Plus, Wrench, X, ShoppingCart } from 'lucide-react';
 import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function OutilsView({ outils, categories, onAdd, onDelete, onSell, movements }) {
+export default function OutilsView({ outils, categories, onAdd, onDelete, onSell, onUpdate, movements }) {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
   const [sellTarget, setSellTarget] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const totalUnits = outils.reduce((s, o) => s + (o.quantite || 0), 0);
 
@@ -70,15 +71,28 @@ export default function OutilsView({ outils, categories, onAdd, onDelete, onSell
               <div className="text-[16px] font-semibold text-white mb-1">{o.nom}</div>
               {o.description && <div className="text-[12.5px] leading-snug mb-3" style={{ color: '#808080' }}>{o.description}</div>}
               {o.vendeur && <div className="text-[11.5px] mt-2 flex items-center gap-1.5" style={{ color: '#808080' }}><span style={{ color: '#666' }}>Vendeur :</span> {o.vendeur}</div>}
-              <div className="flex items-center justify-between mt-3">
-                <div className="text-[15px] font-bold text-white">{o.prix ? `${o.prix} $` : '—'}</div>
-                {o.quantite ? <div className="text-[11px]" style={{ color: '#808080' }}>Qté : {o.quantite}</div> : null}
-              </div>
-              <button onClick={() => setSellTarget(o)} disabled={!o.quantite}
-                className="mt-3 w-full flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold transition-colors disabled:opacity-40"
-                style={{ background: (o.quantite && o.statut !== 'Vendu') ? '#1a1a1a' : '#161616', color: (o.quantite && o.statut !== 'Vendu') ? '#ff7a4d' : '#666', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <ShoppingCart size={14} /> {o.statut === 'Vendu' && (!o.quantite) ? 'Épuisé' : 'Vendre'}
-              </button>
+              {editId === o.id ? (
+                <EditInline outil={o} onSave={(data) => { onUpdate?.(o, data); setEditId(null); }} onCancel={() => setEditId(null)} />
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="text-[15px] font-bold text-white">{o.prix ? `${o.prix} $` : '—'}</div>
+                    {o.quantite ? <div className="text-[11px]" style={{ color: '#808080' }}>Qté : {o.quantite}</div> : null}
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <button onClick={() => setSellTarget(o)} disabled={!o.quantite}
+                      className="flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold transition-colors disabled:opacity-40"
+                      style={{ background: (o.quantite && o.statut !== 'Vendu') ? '#1a1a1a' : '#161616', color: (o.quantite && o.statut !== 'Vendu') ? '#ff7a4d' : '#666', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <ShoppingCart size={14} /> {o.statut === 'Vendu' && (!o.quantite) ? 'Épuisé' : 'Vendre'}
+                    </button>
+                    <button onClick={() => setEditId(o.id)}
+                      className="flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[12.5px] font-semibold"
+                      style={{ background: '#1a1a1a', color: '#ccc', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      Modifier
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -142,6 +156,36 @@ function SellModal({ outil, onClose, onConfirm }) {
         </form>
       </div>
     </div>
+  );
+}
+
+function EditInline({ outil, onSave, onCancel }) {
+  const [prix, setPrix] = useState(outil.prix ?? '');
+  const [quantite, setQuantite] = useState(outil.quantite ?? '');
+  const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
+  const submit = (e) => {
+    e.preventDefault();
+    onSave({ prix: parseFloat(prix) || 0, quantite: parseInt(quantite) || 0 });
+  };
+  return (
+    <form onSubmit={submit} className="mt-3 space-y-2">
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-[10px] font-medium mb-1" style={{ color: '#808080' }}>Prix ($)</label>
+          <input type="number" min="0" step="0.01" value={prix} onChange={(e) => setPrix(e.target.value)} autoFocus
+            className="w-full rounded-lg px-2.5 py-2 text-[13px]" style={inputStyle} />
+        </div>
+        <div>
+          <label className="block text-[10px] font-medium mb-1" style={{ color: '#808080' }}>Quantité</label>
+          <input type="number" min="0" value={quantite} onChange={(e) => setQuantite(e.target.value)}
+            className="w-full rounded-lg px-2.5 py-2 text-[13px]" style={inputStyle} />
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <button type="button" onClick={onCancel} className="flex-1 rounded-lg px-3 py-2 text-[12px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
+        <button type="submit" className="flex-1 rounded-lg px-3 py-2 text-[12px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Enregistrer</button>
+      </div>
+    </form>
   );
 }
 
