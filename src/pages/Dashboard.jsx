@@ -36,6 +36,7 @@ export default function Dashboard() {
   const [sources, setSources] = useState([]);
   const [armes, setArmes] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [arsenalArgent, setArsenalArgent] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -60,7 +61,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa] = await Promise.all([
         base44.entities.Objet.list('-created_date', 500),
         base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
@@ -75,6 +76,7 @@ export default function Dashboard() {
         base44.entities.Arme.list('-created_date', 50),
         base44.entities.Transaction.list('-created_date', 200),
         base44.entities.LocationArme.list('-created_date', 200),
+        base44.entities.ArsenalArgent.list('-created_date', 200),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -90,6 +92,7 @@ export default function Dashboard() {
       setArmes(ar);
       setTransactions(tr);
       setLocations(locs);
+      setArsenalArgent(aa);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -128,6 +131,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Arme, setArmes),
       subscribeEntity(base44.entities.Transaction, setTransactions),
       subscribeEntity(base44.entities.LocationArme, setLocations),
+      subscribeEntity(base44.entities.ArsenalArgent, setArsenalArgent),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -217,6 +221,14 @@ export default function Dashboard() {
     await loadAll();
   };
   const deleteLocation = async (l) => { try { await base44.entities.LocationArme.delete(l.id); } catch (e) {} await loadAll(); };
+  const addArsenalArgent = async (data) => {
+    try {
+      await base44.entities.ArsenalArgent.create(data);
+      await logAction(data.type === 'depot' ? 'Dépôt argent Arsenal' : 'Retrait argent Arsenal', `${data.montant}$${data.note ? ` — ${data.note}` : ''}`);
+    } catch (e) {}
+    await loadAll();
+  };
+  const deleteArsenalArgent = async (m) => { try { await base44.entities.ArsenalArgent.delete(m.id); } catch (e) {} await loadAll(); };
   const deleteLocationsBatch = async (list) => {
     try {
       await base44.entities.LocationArme.deleteMany({ id: { $in: list.map(l => l.id) } });
@@ -439,7 +451,7 @@ export default function Dashboard() {
         )}
 
         {view === 'arsenal' && (currentUser?.role === 'Dev' || currentUser?.role === 'Teniente') && (
-          <ArsenalView armes={armes} movements={movements} />
+          <ArsenalView armes={armes} movements={movements} onAdd={addArme} onDelete={deleteArme} argent={arsenalArgent} onAddArgent={addArsenalArgent} onDeleteArgent={deleteArsenalArgent} />
         )}
       </main>
     </div>
