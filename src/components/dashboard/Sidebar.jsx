@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair, FlaskConical } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair, FlaskConical, Globe } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -160,7 +160,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
             <div className="relative" ref={devRef}>
               <button onClick={() => setOpenDev(o => !o)} title="Dev · Administration"
                 className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
-                style={(active === 'permissions' || active === 'comptes' || active === 'logs' || active === 'passwords' || openDev) ? { background: '#9c27b0', color: '#fff' } : { color: '#808080' }}>
+                style={(active === 'permissions' || active === 'comptes' || active === 'logs' || active === 'passwords' || active === 'iplogs' || openDev) ? { background: '#9c27b0', color: '#fff' } : { color: '#808080' }}>
                 <Shield size={20} />
               </button>
               {openDev && (
@@ -186,6 +186,11 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
                     style={active === 'passwords' ? { color: '#fff', background: 'rgba(156,39,176,0.2)' } : { color: '#ccc' }}>
                     <KeyRound size={15} /> Mots de passe
+                  </button>
+                  <button onClick={() => { handleNavigate('iplogs'); setOpenDev(false); }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
+                    style={active === 'iplogs' ? { color: '#fff', background: 'rgba(156,39,176,0.2)' } : { color: '#ccc' }}>
+                    <Globe size={15} /> Logs IP
                   </button>
                 </div>
               )}

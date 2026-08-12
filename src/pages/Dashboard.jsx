@@ -19,6 +19,7 @@ import ArmesView from '@/components/dashboard/ArmesView';
 import CalculateurView from '@/components/dashboard/CalculateurView';
 import ArsenalView from '@/components/dashboard/ArsenalView';
 import ContrebandeView from '@/components/dashboard/ContrebandeView';
+import IpLogsView from '@/components/dashboard/IpLogsView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ export default function Dashboard() {
   const [arsenalArgent, setArsenalArgent] = useState([]);
   const [contrebande, setContrebande] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [ipLogs, setIpLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -63,7 +65,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa, cb2] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa, cb2, ips] = await Promise.all([
         base44.entities.Objet.list('-created_date', 500),
         base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
@@ -80,6 +82,7 @@ export default function Dashboard() {
         base44.entities.LocationArme.list('-created_date', 200),
         base44.entities.ArsenalArgent.list('-created_date', 200),
         base44.entities.Contrebande.list('-created_date', 500),
+        base44.entities.IpLog.list('-created_date', 200),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -97,6 +100,7 @@ export default function Dashboard() {
       setLocations(locs);
       setArsenalArgent(aa);
       setContrebande(cb2);
+      setIpLogs(ips);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -137,6 +141,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.LocationArme, setLocations),
       subscribeEntity(base44.entities.ArsenalArgent, setArsenalArgent),
       subscribeEntity(base44.entities.Contrebande, setContrebande),
+      subscribeEntity(base44.entities.IpLog, setIpLogs),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -265,6 +270,14 @@ export default function Dashboard() {
     await loadAll();
   };
   const deleteContrebande = async (c) => { try { await base44.entities.Contrebande.delete(c.id); await logAction('Suppression contrebande', `${c.nom}`); } catch (e) {} await loadAll(); };
+  const deleteIpLog = async (l) => { try { await base44.entities.IpLog.delete(l.id); } catch (e) {} await loadAll(); };
+  const deleteIpLogsBatch = async (list) => {
+    try {
+      await base44.entities.IpLog.deleteMany({ id: { $in: list.map(l => l.id) } });
+      await logAction('Suppression logs IP', `${list.length} entrée(s)`);
+    } catch (e) {}
+    await loadAll();
+  };
   const deleteLocationsBatch = async (list) => {
     try {
       await base44.entities.LocationArme.deleteMany({ id: { $in: list.map(l => l.id) } });
@@ -492,6 +505,10 @@ export default function Dashboard() {
 
         {view === 'contrebande' && (
           <ContrebandeView items={contrebande} onAdd={addContrebande} onDelete={deleteContrebande} onSell={sellContrebande} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
+        )}
+
+        {view === 'iplogs' && currentUser?.role === 'Dev' && (
+          <IpLogsView logs={ipLogs} onDelete={deleteIpLog} onDeleteAll={deleteIpLogsBatch} userRole={currentUser?.role} />
         )}
       </main>
     </div>

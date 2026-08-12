@@ -1,0 +1,25 @@
+{
+  "name": "IpLog",
+  "type": "object",
+  "properties": {
+    "matricule": {
+      "type": "string"
+    },
+    "nom": {
+      "type": "string"
+    },
+    "ip": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "succes": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "ip"
+  ]
+}
