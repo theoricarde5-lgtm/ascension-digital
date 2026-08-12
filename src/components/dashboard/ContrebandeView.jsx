@@ -119,9 +119,7 @@ function Pill({ label, active, onClick }) {
 }
 
 function AddModal({ sources = [], onAddSource, onClose, onAdd }) {
-  const [form, setForm] = useState({ nom: '', type: 'Gaz Bz', prix: '', quantite: '', description: '', vendeur: '' });
-  const [newSource, setNewSource] = useState('');
-  const [addingSource, setAddingSource] = useState(false);
+  const [form, setForm] = useState({ nom: '', type: 'Gaz Bz', prix: '', quantite: '', description: '' });
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -132,7 +130,6 @@ function AddModal({ sources = [], onAddSource, onClose, onAdd }) {
       description: form.description.trim(),
       prix: parseFloat(form.prix) || 0,
       quantite: parseInt(form.quantite) || 0,
-      vendeur: form.vendeur.trim(),
     });
   };
   const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
@@ -166,23 +163,6 @@ function AddModal({ sources = [], onAddSource, onClose, onAdd }) {
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Quantité</label>
             <input name="quantite" type="number" value={form.quantite} onChange={handleChange} placeholder="0"
               className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Racheté à</label>
-            <div className="flex gap-2">
-              <select name="vendeur" value={form.vendeur} onChange={handleChange} className="flex-1 rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
-                <option value="">— Choisir —</option>
-                {sources.map(s => <option key={s.id} value={s.nom}>{s.nom}</option>)}
-              </select>
-              <button type="button" onClick={() => setAddingSource(s => !s)} className="rounded-xl px-3 text-[13px] font-medium whitespace-nowrap" style={{ color: '#fff', background: 'var(--montoya-accent)' }}>+ Groupe</button>
-            </div>
-            {addingSource && (
-              <div className="flex gap-2 mt-2">
-                <input value={newSource} onChange={(e) => setNewSource(e.target.value)} placeholder="Nouveau groupe..."
-                  className="flex-1 rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
-                <button type="button" onClick={async () => { if (newSource.trim()) { await onAddSource(newSource); setForm({ ...form, vendeur: newSource.trim() }); setNewSource(''); setAddingSource(false); } }} className="rounded-xl px-3 py-2.5 text-[13px] font-semibold text-white whitespace-nowrap" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
-              </div>
-            )}
           </div>
           <div className="col-span-2">
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Description</label>
