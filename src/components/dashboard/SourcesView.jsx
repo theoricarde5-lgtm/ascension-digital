@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Tags, Plus, X, ArrowLeft, Box, Gem } from 'lucide-react';
+import { Tags, Plus, X, ArrowLeft, Box, Gem, Trash2 } from 'lucide-react';
 
-export default function SourcesView({ sources, onAdd, objets = [], bijoux = [], transactions = [] }) {
+export default function SourcesView({ sources, onAdd, objets = [], bijoux = [], transactions = [], onDeleteTransaction }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [nom, setNom] = useState('');
   const [saving, setSaving] = useState(false);
@@ -29,7 +29,7 @@ export default function SourcesView({ sources, onAdd, objets = [], bijoux = [], 
       prix: b.prix || 0, quantite: b.quantite || 0, date: b.created_date, source: 'Registre',
     }));
     transactions.filter(t => t.vendeur === selected.nom).forEach(t => list.push({
-      id: `t-${t.id}`, type: t.type || 'Transaction', nom: t.nom, categorie: t.categorie || '',
+      id: `t-${t.id}`, rawId: t.id, type: t.type || 'Transaction', nom: t.nom, categorie: t.categorie || '',
       prix: t.prix || 0, quantite: t.quantite || 0, date: t.created_date, source: t.source || 'Calculateur',
     }));
     return list.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -90,7 +90,17 @@ export default function SourcesView({ sources, onAdd, objets = [], bijoux = [], 
                       {t.date ? new Date(t.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'} · {t.quantite} × {t.prix} $
                     </div>
                   </div>
-                  <div className="text-[15px] font-bold text-white whitespace-nowrap">{sousTotal.toLocaleString('fr-FR')} $</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-[15px] font-bold text-white whitespace-nowrap">{sousTotal.toLocaleString('fr-FR')} $</div>
+                    {t.rawId && onDeleteTransaction && (
+                      <button onClick={() => onDeleteTransaction({ id: t.rawId, nom: t.nom, vendeur: selected.nom })}
+                        title="Supprimer la transaction"
+                        className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:brightness-125"
+                        style={{ color: '#808080', background: '#121212' }}>
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
                 </div>
               );
             })}

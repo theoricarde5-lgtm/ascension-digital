@@ -141,6 +141,7 @@ export default function Dashboard() {
   };
 
   const addSource = async (nom) => { try { await base44.entities.Source.create({ nom: nom.trim() }); } catch (e) {} await loadAll(); };
+  const deleteTransaction = async (t) => { try { await base44.entities.Transaction.delete(t.id); await logAction('Suppression transaction', `${t.nom || ''}${t.vendeur ? ` (${t.vendeur})` : ''}`); } catch (e) {} await loadAll(); };
   const addArme = async (data) => {
     await base44.entities.Arme.create(data);
     try {
@@ -380,7 +381,7 @@ export default function Dashboard() {
         )}
 
         {view === 'groupes' && (
-          <SourcesView sources={sources} onAdd={addSource} objets={objets} bijoux={bijoux} transactions={transactions} />
+          <SourcesView sources={sources} onAdd={addSource} objets={objets} bijoux={bijoux} transactions={transactions} onDeleteTransaction={deleteTransaction} />
         )}
 
         {view === 'armes' && (
