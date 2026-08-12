@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair, FlaskConical } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -105,6 +105,13 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
             </div>
           )}
         </div>
+
+        {/* Contrebande - just below Inventaire */}
+        <button onClick={() => handleNavigate('contrebande')} title="Contrebande"
+          className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
+          style={active === 'contrebande' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
+          <FlaskConical size={20} />
+        </button>
 
         {/* Coffre - top level */}
         <button onClick={() => handleNavigate('coffre')} title="Coffre"

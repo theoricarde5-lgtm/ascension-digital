@@ -18,6 +18,7 @@ import SourcesView from '@/components/dashboard/SourcesView';
 import ArmesView from '@/components/dashboard/ArmesView';
 import CalculateurView from '@/components/dashboard/CalculateurView';
 import ArsenalView from '@/components/dashboard/ArsenalView';
+import ContrebandeView from '@/components/dashboard/ContrebandeView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export default function Dashboard() {
   const [armes, setArmes] = useState([]);
   const [locations, setLocations] = useState([]);
   const [arsenalArgent, setArsenalArgent] = useState([]);
+  const [contrebande, setContrebande] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -61,7 +63,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa, cb2] = await Promise.all([
         base44.entities.Objet.list('-created_date', 500),
         base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
@@ -77,6 +79,7 @@ export default function Dashboard() {
         base44.entities.Transaction.list('-created_date', 200),
         base44.entities.LocationArme.list('-created_date', 200),
         base44.entities.ArsenalArgent.list('-created_date', 200),
+        base44.entities.Contrebande.list('-created_date', 500),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -93,6 +96,7 @@ export default function Dashboard() {
       setTransactions(tr);
       setLocations(locs);
       setArsenalArgent(aa);
+      setContrebande(cb2);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -132,6 +136,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Transaction, setTransactions),
       subscribeEntity(base44.entities.LocationArme, setLocations),
       subscribeEntity(base44.entities.ArsenalArgent, setArsenalArgent),
+      subscribeEntity(base44.entities.Contrebande, setContrebande),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -229,6 +234,19 @@ export default function Dashboard() {
     await loadAll();
   };
   const deleteArsenalArgent = async (m) => { try { await base44.entities.ArsenalArgent.delete(m.id); } catch (e) {} await loadAll(); };
+  const addContrebande = async (data) => {
+    await base44.entities.Contrebande.create(data);
+    try {
+      await base44.entities.Movement.create({
+        type: 'retrait',
+        montant: (data.prix || 0) * (data.quantite || 0),
+        note: `Achat contrebande : ${data.nom}${data.type ? ` (${data.type})` : ''}`
+      });
+    } catch (e) {}
+    await logAction('Ajout contrebande', `${data.nom}${data.type ? ` (${data.type})` : ''} — ${data.quantite || 0} × ${data.prix || 0}$`);
+    await loadAll();
+  };
+  const deleteContrebande = async (c) => { try { await base44.entities.Contrebande.delete(c.id); await logAction('Suppression contrebande', `${c.nom}`); } catch (e) {} await loadAll(); };
   const deleteLocationsBatch = async (list) => {
     try {
       await base44.entities.LocationArme.deleteMany({ id: { $in: list.map(l => l.id) } });
@@ -452,6 +470,10 @@ export default function Dashboard() {
 
         {view === 'arsenal' && (currentUser?.role === 'Dev' || currentUser?.role === 'Teniente') && (
           <ArsenalView armes={armes} movements={movements} onAdd={addArme} onDelete={deleteArme} argent={arsenalArgent} onAddArgent={addArsenalArgent} onDeleteArgent={deleteArsenalArgent} />
+        )}
+
+        {view === 'contrebande' && (
+          <ContrebandeView items={contrebande} sources={sources} onAdd={addContrebande} onDelete={deleteContrebande} movements={movements} onAddSource={addSource} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
         )}
       </main>
     </div>

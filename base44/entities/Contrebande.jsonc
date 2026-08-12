@@ -1,0 +1,41 @@
+{
+  "name": "Contrebande",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Gaz Bz",
+        "Fausse plaque"
+      ],
+      "default": "Gaz Bz"
+    },
+    "description": {
+      "type": "string"
+    },
+    "prix": {
+      "type": "number"
+    },
+    "quantite": {
+      "type": "number"
+    },
+    "statut": {
+      "type": "string",
+      "enum": [
+        "Disponible",
+        "R\u00e9serv\u00e9",
+        "Vendu"
+      ],
+      "default": "Disponible"
+    },
+    "vendeur": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}
