@@ -503,7 +503,7 @@ export default function Dashboard() {
         )}
 
         {view === 'suivi' && (
-          <SuiviGroupeView fiches={fichesSuivi} onAdd={addFicheSuivi} onDelete={deleteFicheSuivi} userRole={currentUser?.role} currentUser={currentUser} />
+          <SuiviGroupeView fiches={fichesSuivi} onAdd={addFicheSuivi} onDelete={deleteFicheSuivi} userRole={currentUser?.role} currentUser={currentUser} groups={sources} onAddGroup={addSource} />
         )}
 
         {view === 'armes' && (

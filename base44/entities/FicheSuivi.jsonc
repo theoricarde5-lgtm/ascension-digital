@@ -16,16 +16,7 @@
       "type": "string"
     },
     "type_activite": {
-      "type": "string",
-      "enum": [
-        "R\u00e9union",
-        "Patrouille",
-        "Transaction",
-        "Mission",
-        "Entra\u00eenement",
-        "Autre"
-      ],
-      "default": "R\u00e9union"
+      "type": "string"
     },
     "description": {
       "type": "string"

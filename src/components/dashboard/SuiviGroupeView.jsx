@@ -1,16 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, X, FileText, Search, Trash2, Calendar, MapPin, Users, Tag, ClipboardList, CheckCircle2, NotebookPen } from 'lucide-react';
 
-const TYPE_STYLE = {
-  Réunion: { bg: 'rgba(96,165,250,0.15)', color: '#60a5fa' },
-  Patrouille: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
-  Transaction: { bg: 'rgba(245,158,11,0.15)', color: '#fbbf24' },
-  Mission: { bg: 'rgba(239,68,68,0.15)', color: '#f87171' },
-  Entraînement: { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
-  Autre: { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
+const PALETTE = [
+  { bg: 'rgba(96,165,250,0.15)', color: '#60a5fa' },
+  { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+  { bg: 'rgba(245,158,11,0.15)', color: '#fbbf24' },
+  { bg: 'rgba(239,68,68,0.15)', color: '#f87171' },
+  { bg: 'rgba(168,85,247,0.15)', color: '#c084fc' },
+  { bg: 'rgba(236,72,153,0.15)', color: '#f472b6' },
+  { bg: 'rgba(20,184,166,0.15)', color: '#2dd4bf' },
+  { bg: 'rgba(148,163,184,0.15)', color: '#94a3b8' },
+];
+const styleFor = (name, groups) => {
+  const idx = groups.findIndex(g => g.nom === name);
+  return PALETTE[(idx >= 0 ? idx : PALETTE.length - 1) % PALETTE.length];
 };
 
-export default function SuiviGroupeView({ fiches, onAdd, onDelete, userRole, currentUser }) {
+export default function SuiviGroupeView({ fiches, onAdd, onDelete, userRole, currentUser, groups, onAddGroup }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [activeType, setActiveType] = useState('Tous');
@@ -50,8 +56,8 @@ export default function SuiviGroupeView({ fiches, onAdd, onDelete, userRole, cur
         </div>
         <div className="flex flex-wrap gap-2">
           <Pill label="Tous" active={activeType === 'Tous'} onClick={() => setActiveType('Tous')} />
-          {Object.keys(TYPE_STYLE).map(t => (
-            <Pill key={t} label={t} active={activeType === t} onClick={() => setActiveType(t)} />
+          {groups.map(g => (
+            <Pill key={g.id} label={g.nom} active={activeType === g.nom} onClick={() => setActiveType(g.nom)} />
           ))}
         </div>
       </div>
@@ -68,7 +74,7 @@ export default function SuiviGroupeView({ fiches, onAdd, onDelete, userRole, cur
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(f => {
-            const s = TYPE_STYLE[f.type_activite] || TYPE_STYLE.Autre;
+            const s = styleFor(f.type_activite, groups);
             return (
               <button key={f.id} onClick={() => setSelected(f)}
                 className="rounded-2xl p-5 relative text-left transition-transform hover:scale-[1.02]"
@@ -79,7 +85,7 @@ export default function SuiviGroupeView({ fiches, onAdd, onDelete, userRole, cur
                 <div className="flex items-center gap-2 mb-2 pr-8">
                   <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider"
                     style={{ background: s.bg, color: s.color }}>
-                    {f.type_activite}
+                    {f.type_activite || 'Sans groupe'}
                   </span>
                 </div>
                 <div className="text-[16px] font-semibold text-white mb-1">{f.groupe}</div>
@@ -95,11 +101,11 @@ export default function SuiviGroupeView({ fiches, onAdd, onDelete, userRole, cur
       )}
 
       {modalOpen && (
-        <FicheModal onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} auteur={currentUser?.nom} />
+        <FicheModal groups={groups} onAddGroup={onAddGroup} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} auteur={currentUser?.nom} />
       )}
 
       {selected && (
-        <FicheDetail fiche={selected} onClose={() => setSelected(null)} />
+        <FicheDetail fiche={selected} groups={groups} onClose={() => setSelected(null)} />
       )}
     </div>
   );
@@ -115,12 +121,13 @@ function Pill({ label, active, onClick }) {
   );
 }
 
-function FicheModal({ onClose, onAdd, auteur }) {
+function FicheModal({ onClose, onAdd, auteur, groups, onAddGroup }) {
   const [form, setForm] = useState({
     groupe: '', date: new Date().toISOString().slice(0, 10), lieu: '', membres: '',
-    type_activite: 'Réunion', description: '', resultat: '', notes: ''
+    type_activite: '', description: '', resultat: '', notes: ''
   });
-  const [done, setDone] = useState(false);
+  const [newGroup, setNewGroup] = useState('');
+  const [addingGroup, setAddingGroup] = useState(false);
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -161,10 +168,21 @@ function FicheModal({ onClose, onAdd, auteur }) {
               className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
           </div>
           <div className="col-span-2">
-            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Type d'activité</label>
-            <select name="type_activite" value={form.type_activite} onChange={handleChange} className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
-              {Object.keys(TYPE_STYLE).map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Groupe (catégorie)</label>
+            <div className="flex gap-2">
+              <select name="type_activite" value={form.type_activite} onChange={handleChange} className="flex-1 rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
+                <option value="">— Choisir —</option>
+                {groups.map(g => <option key={g.id} value={g.nom}>{g.nom}</option>)}
+              </select>
+              <button type="button" onClick={() => setAddingGroup(s => !s)} className="rounded-xl px-3 text-[13px] font-medium whitespace-nowrap" style={{ color: '#fff', background: 'var(--montoya-accent)' }}>+ Groupe</button>
+            </div>
+            {addingGroup && (
+              <div className="flex gap-2 mt-2">
+                <input value={newGroup} onChange={(e) => setNewGroup(e.target.value)} placeholder="Nouveau groupe..."
+                  className="flex-1 rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+                <button type="button" onClick={async () => { if (newGroup.trim()) { await onAddGroup(newGroup); setForm({ ...form, type_activite: newGroup.trim() }); setNewGroup(''); setAddingGroup(false); } }} className="rounded-xl px-3 py-2.5 text-[13px] font-semibold text-white whitespace-nowrap" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
+              </div>
+            )}
           </div>
           <div className="col-span-2">
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Description</label>
@@ -193,8 +211,8 @@ function FicheModal({ onClose, onAdd, auteur }) {
   );
 }
 
-function FicheDetail({ fiche, onClose }) {
-  const s = TYPE_STYLE[fiche.type_activite] || TYPE_STYLE.Autre;
+function FicheDetail({ fiche, onClose, groups }) {
+  const s = styleFor(fiche.type_activite, groups);
   const rows = [
     { icon: Tag, label: 'Type', value: fiche.type_activite },
     { icon: Calendar, label: 'Date', value: fiche.date },
