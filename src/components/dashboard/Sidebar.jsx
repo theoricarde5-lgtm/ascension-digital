@@ -16,19 +16,34 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(660, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
-      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.2);
-      setTimeout(() => ctx.close(), 300);
+      // Courte mélodie mexicaine (vibora del mar / mariachi) en La mineur
+      // notes: A4 C5 E5 C5 A4 — type "square" pour un côté cuivre
+      const notes = [
+        { f: 440.00, t: 0.00, d: 0.12 }, // A4
+        { f: 523.25, t: 0.12, d: 0.12 }, // C5
+        { f: 659.25, t: 0.24, d: 0.16 }, // E5
+        { f: 523.25, t: 0.40, d: 0.12 }, // C5
+        { f: 440.00, t: 0.52, d: 0.18 }, // A4
+      ];
+      const master = ctx.createGain();
+      master.gain.value = 0.0001;
+      master.connect(ctx.destination);
+      master.gain.exponentialRampToValueAtTime(0.14, ctx.currentTime + 0.02);
+      master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.75);
+      notes.forEach(n => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(n.f, ctx.currentTime + n.t);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime + n.t);
+        g.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + n.t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + n.t + n.d);
+        osc.connect(g);
+        g.connect(master);
+        osc.start(ctx.currentTime + n.t);
+        osc.stop(ctx.currentTime + n.t + n.d + 0.02);
+      });
+      setTimeout(() => ctx.close(), 900);
     } catch (e) {}
   };
 
