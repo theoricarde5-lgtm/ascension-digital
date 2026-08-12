@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Shield, Trash2, Check } from 'lucide-react';
+import { Plus, X, Shield, Trash2, Check, Ban, UserX } from 'lucide-react';
 
 export const VIEWS = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -9,6 +9,11 @@ export const VIEWS = [
   { id: 'coffre', label: 'Coffre' },
   { id: 'parametres', label: 'Paramètres' },
   { id: 'permissions', label: 'Permissions' },
+];
+
+export const ACTIONS = [
+  { id: 'action_bannir', label: 'Bannir', icon: Ban },
+  { id: 'action_exclure', label: 'Exclure', icon: UserX },
 ];
 
 export default function PermissionsView({ roles, onAdd, onUpdate, onDelete }) {
@@ -68,7 +73,7 @@ export default function PermissionsView({ roles, onAdd, onUpdate, onDelete }) {
                   style={{ color: '#808080', background: '#121212' }}><Trash2 size={14} /></button>
               </div>
               <div className="text-[10.5px] font-bold uppercase tracking-wider mb-2.5" style={{ color: '#666' }}>Accès aux vues</div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {VIEWS.map(v => {
                   const active = (r.permissions || []).includes(v.id);
                   return (
@@ -78,6 +83,22 @@ export default function PermissionsView({ roles, onAdd, onUpdate, onDelete }) {
                         ? { background: '#ff5722', color: '#fff' }
                         : { background: '#121212', color: '#808080', border: '1px solid rgba(255,255,255,0.06)' }}>
                       {active && <Check size={11} />}{v.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="text-[10.5px] font-bold uppercase tracking-wider mb-2.5" style={{ color: '#666' }}>Actions</div>
+              <div className="flex flex-wrap gap-2">
+                {ACTIONS.map(a => {
+                  const active = (r.permissions || []).includes(a.id);
+                  const Icon = a.icon;
+                  return (
+                    <button key={a.id} onClick={() => togglePerm(r, a.id)}
+                      className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors"
+                      style={active
+                        ? { background: '#9c27b0', color: '#fff' }
+                        : { background: '#121212', color: '#808080', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <Icon size={12} />{a.label}
                     </button>
                   );
                 })}
@@ -129,6 +150,22 @@ function RoleModal({ onClose, onAdd }) {
                     ? { background: '#ff5722', color: '#fff' }
                     : { background: '#121212', color: '#808080', border: '1px solid rgba(255,255,255,0.06)' }}>
                   {active && <Check size={11} />}{v.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="text-[10.5px] font-bold uppercase tracking-wider mb-2.5" style={{ color: '#666' }}>Actions</div>
+          <div className="flex flex-wrap gap-2 mb-5">
+            {ACTIONS.map(a => {
+              const active = perms.includes(a.id);
+              const Icon = a.icon;
+              return (
+                <button type="button" key={a.id} onClick={() => toggle(a.id)}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium"
+                  style={active
+                    ? { background: '#9c27b0', color: '#fff' }
+                    : { background: '#121212', color: '#808080', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <Icon size={12} />{a.label}
                 </button>
               );
             })}
