@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Trash2, User, Ban, UserX, RotateCcw } from 'lucide-react';
+import { Plus, X, Trash2, User, Ban, UserX, RotateCcw, Globe } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 
 const getRoleStyle = (role) => {
@@ -16,6 +16,7 @@ const STATUT_STYLE = {
 
 export default function ComptesView({ comptes, roles, onAdd, onDelete, onUpdate }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const [ipTarget, setIpTarget] = useState(null);
 
   return (
     <div>
@@ -110,6 +111,13 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete, onUpdate 
                     </button>
                   )}
                 </div>
+                <div className="flex gap-2 mt-2">
+                  <button onClick={() => setIpTarget(c)}
+                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold transition-colors"
+                    style={{ background: '#121212', color: c.ip_bannie ? '#f87171' : '#60a5fa', border: '1px solid rgba(255,255,255,0.06)' }}>
+                    <Globe size={13} /> {c.ip_bannie ? `IP: ${c.ip_bannie}` : 'Bannir IP'}
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -119,6 +127,47 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete, onUpdate 
       {modalOpen && (
         <AddModal roles={roles} onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} />
       )}
+
+      {ipTarget && (
+        <IpModal compte={ipTarget} onClose={() => setIpTarget(null)} onConfirm={(ip) => { onUpdate?.(ipTarget, { ip_bannie: ip }); setIpTarget(null); }} onLift={() => { onUpdate?.(ipTarget, { ip_bannie: '' }); setIpTarget(null); }} />
+      )}
+    </div>
+  );
+}
+
+function IpModal({ compte, onClose, onConfirm, onLift }) {
+  const [ip, setIp] = useState(compte.ip_bannie || '');
+  const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!ip.trim()) return;
+    onConfirm(ip.trim());
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div className="w-full max-w-[420px] rounded-2xl p-6" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <h3 className="text-[17px] font-semibold text-white">Bannir IP — {compte.nom}</h3>
+            <p className="text-[12px] mt-0.5" style={{ color: '#808080' }}>Bloque la connexion depuis cette adresse IP</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#808080', background: '#121212' }}><X size={16} /></button>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Adresse IP *</label>
+          <input value={ip} onChange={(e) => setIp(e.target.value)} required placeholder="Ex : 192.168.1.10"
+            className="w-full rounded-xl px-3 py-2.5 text-[13px] mb-4 outline-none" style={inputStyle} />
+          <div className="flex justify-end gap-2">
+            {compte.ip_bannie && (
+              <button type="button" onClick={onLift} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#4ade80', background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>Lever le ban</button>
+            )}
+            <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
+            <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: '#60a5fa' }}>Bannir</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

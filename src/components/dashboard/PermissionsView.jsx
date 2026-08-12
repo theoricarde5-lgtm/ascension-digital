@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Shield, Trash2, Check, Ban, UserX } from 'lucide-react';
+import { Plus, X, Shield, Trash2, Check, Ban, UserX, Globe } from 'lucide-react';
 
 export const VIEWS = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -14,6 +14,7 @@ export const VIEWS = [
 export const ACTIONS = [
   { id: 'action_bannir', label: 'Bannir', icon: Ban },
   { id: 'action_exclure', label: 'Exclure', icon: UserX },
+  { id: 'action_ban_ip', label: 'Bannir IP', icon: Globe },
 ];
 
 export default function PermissionsView({ roles, onAdd, onUpdate, onDelete }) {
