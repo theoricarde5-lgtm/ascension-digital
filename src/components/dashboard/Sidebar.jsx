@@ -10,6 +10,32 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
   const devRef = useRef(null);
   const isDev = userRole === 'Dev';
 
+  const playNavSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+      setTimeout(() => ctx.close(), 300);
+    } catch (e) {}
+  };
+
+  const handleNavigate = (id) => {
+    playNavSound();
+    onNavigate?.(id);
+  };
+
   const handleLogout = () => {
     sessionStorage.removeItem('ls_user');
     navigate('/', { replace: true });
@@ -44,7 +70,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
       {/* Nav items */}
       <nav className="flex flex-col gap-2 flex-1 w-full items-center">
         {/* Dashboard - top level */}
-        <button onClick={() => onNavigate?.('dashboard')} title="Dashboard"
+        <button onClick={() => handleNavigate('dashboard')} title="Dashboard"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'dashboard' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <LayoutGrid size={20} />
@@ -68,7 +94,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
                 const Icon = it.icon;
                 const isActive = active === it.id;
                 return (
-                  <button key={it.id} onClick={() => { onNavigate?.(it.id); setOpenInv(false); }}
+                  <button key={it.id} onClick={() => { handleNavigate(it.id); setOpenInv(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
                     style={isActive ? { color: '#fff', background: 'rgba(255,87,34,0.15)' } : { color: '#ccc' }}>
                     <Icon size={15} /> {it.label}
@@ -80,21 +106,21 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
         </div>
 
         {/* Coffre - top level */}
-        <button onClick={() => onNavigate?.('coffre')} title="Coffre"
+        <button onClick={() => handleNavigate('coffre')} title="Coffre"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'coffre' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Wallet size={20} />
         </button>
 
         {/* Groupes - top level */}
-        <button onClick={() => onNavigate?.('groupes')} title="Groupes"
+        <button onClick={() => handleNavigate('groupes')} title="Groupes"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'groupes' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Tags size={20} />
         </button>
 
         {/* Calculateur - top level */}
-        <button onClick={() => onNavigate?.('calculateur')} title="Calculateur"
+        <button onClick={() => handleNavigate('calculateur')} title="Calculateur"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'calculateur' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Calculator size={20} />
@@ -104,7 +130,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
         <div className="w-8 h-px my-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
 
         {/* Paramètres - visible to all */}
-        <button onClick={() => onNavigate?.('parametres')} title="Paramètres"
+        <button onClick={() => handleNavigate('parametres')} title="Paramètres"
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'parametres' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Settings size={20} />
@@ -124,22 +150,22 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
                 <div className="absolute left-[52px] top-0 w-[200px] rounded-xl py-2 z-50"
                   style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }}>
                   <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: '#666' }}>Dev · Admin</div>
-                  <button onClick={() => { onNavigate?.('permissions'); setOpenDev(false); }}
+                  <button onClick={() => { handleNavigate('permissions'); setOpenDev(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
                     style={active === 'permissions' ? { color: '#fff', background: 'rgba(156,39,176,0.2)' } : { color: '#ccc' }}>
                     <Shield size={15} /> Rôles & Permissions
                   </button>
-                  <button onClick={() => { onNavigate?.('comptes'); setOpenDev(false); }}
+                  <button onClick={() => { handleNavigate('comptes'); setOpenDev(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
                     style={active === 'comptes' ? { color: '#fff', background: 'rgba(156,39,176,0.2)' } : { color: '#ccc' }}>
                     <Users size={15} /> Comptes
                   </button>
-                  <button onClick={() => { onNavigate?.('logs'); setOpenDev(false); }}
+                  <button onClick={() => { handleNavigate('logs'); setOpenDev(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
                     style={active === 'logs' ? { color: '#fff', background: 'rgba(156,39,176,0.2)' } : { color: '#ccc' }}>
                     <ScrollText size={15} /> Logs
                   </button>
-                  <button onClick={() => { onNavigate?.('passwords'); setOpenDev(false); }}
+                  <button onClick={() => { handleNavigate('passwords'); setOpenDev(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2 text-[13px] transition-colors text-left"
                     style={active === 'passwords' ? { color: '#fff', background: 'rgba(156,39,176,0.2)' } : { color: '#ccc' }}>
                     <KeyRound size={15} /> Mots de passe
