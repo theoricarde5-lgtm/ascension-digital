@@ -145,6 +145,13 @@ export default function Dashboard() {
   const updateRole = async (id, data) => { try { await base44.entities.Role.update(id, data); } catch (e) {} await loadAll(); };
   const deleteRole = async (r) => { try { await base44.entities.Role.delete(r.id); await logAction('Suppression rôle', `Rôle "${r.nom}" supprimé`); } catch (e) {} await loadAll(); };
   const addCompte = async (data) => { await base44.entities.Compte.create(data); await logAction('Création compte', `Compte "${data.nom}" (${data.matricule}) — ${data.role}`); await loadAll(); };
+  const updateCompte = async (c, data) => {
+    try {
+      await base44.entities.Compte.update(c.id, data);
+      if (data.statut) await logAction('Mise à jour compte', `${c.nom} → ${data.statut}`);
+    } catch (e) {}
+    await loadAll();
+  };
   const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); await logAction('Suppression compte', `Compte "${c.nom}" (${c.matricule}) supprimé`); } catch (e) {} await loadAll(); };
   const updateComptePassword = async (c, password) => {
     try {
@@ -452,7 +459,7 @@ export default function Dashboard() {
         )}
 
         {view === 'comptes' && (
-          <ComptesView comptes={comptes} roles={roles} onAdd={addCompte} onDelete={deleteCompte} />
+          <ComptesView comptes={comptes} roles={roles} onAdd={addCompte} onDelete={deleteCompte} onUpdate={updateCompte} />
         )}
 
         {view === 'logs' && currentUser?.role === 'Dev' && (

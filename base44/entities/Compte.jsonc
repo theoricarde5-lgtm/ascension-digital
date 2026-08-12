@@ -21,6 +21,15 @@
     },
     "photo": {
       "type": "string"
+    },
+    "statut": {
+      "type": "string",
+      "enum": [
+        "Actif",
+        "Banni",
+        "Exclu"
+      ],
+      "default": "Actif"
     }
   },
   "required": [

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, X, Trash2, User } from 'lucide-react';
+import { Plus, X, Trash2, User, Ban, UserX, RotateCcw } from 'lucide-react';
 import { Image } from '@/components/ui/image';
 
 const getRoleStyle = (role) => {
@@ -8,7 +8,13 @@ const getRoleStyle = (role) => {
   return { accent: '#ff5722', grad: '#ff7a4d' };
 };
 
-export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
+const STATUT_STYLE = {
+  Actif: { bg: 'rgba(34,197,94,0.15)', color: '#4ade80' },
+  Banni: { bg: 'rgba(239,68,68,0.15)', color: '#f87171' },
+  Exclu: { bg: 'rgba(245,158,11,0.15)', color: '#fbbf24' },
+};
+
+export default function ComptesView({ comptes, roles, onAdd, onDelete, onUpdate }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -59,13 +65,50 @@ export default function ComptesView({ comptes, roles, onAdd, onDelete }) {
                     <div className="text-[11.5px]" style={{ color: '#808080' }}>{c.matricule}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10.5px] font-medium"
                     style={isBlack
                       ? { background: '#000', color: '#fff', border: '1px solid rgba(255,255,255,0.25)' }
                       : { background: `${accent}1f`, color: accent }}>
                     {c.role === 'Dev' ? '◆' : '●'} {c.role}
                   </span>
+                  {c.statut && c.statut !== 'Actif' && (() => {
+                    const s = STATUT_STYLE[c.statut] || STATUT_STYLE.Actif;
+                    return (
+                      <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider"
+                        style={{ background: s.bg, color: s.color }}>
+                        {c.statut}
+                      </span>
+                    );
+                  })()}
+                </div>
+                <div className="flex gap-2 mt-3">
+                  {c.statut === 'Banni' ? (
+                    <button onClick={() => onUpdate?.(c, { statut: 'Actif' })}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold transition-colors"
+                      style={{ background: '#121212', color: '#4ade80', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <RotateCcw size={13} /> Réactiver
+                    </button>
+                  ) : (
+                    <button onClick={() => onUpdate?.(c, { statut: 'Banni' })}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold transition-colors"
+                      style={{ background: '#121212', color: '#f87171', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <Ban size={13} /> Bannir
+                    </button>
+                  )}
+                  {c.statut === 'Exclu' ? (
+                    <button onClick={() => onUpdate?.(c, { statut: 'Actif' })}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold transition-colors"
+                      style={{ background: '#121212', color: '#4ade80', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <RotateCcw size={13} /> Réintégrer
+                    </button>
+                  ) : (
+                    <button onClick={() => onUpdate?.(c, { statut: 'Exclu' })}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[12px] font-semibold transition-colors"
+                      style={{ background: '#121212', color: '#fbbf24', border: '1px solid rgba(255,255,255,0.06)' }}>
+                      <UserX size={13} /> Exclure
+                    </button>
+                  )}
                 </div>
               </div>
             );
