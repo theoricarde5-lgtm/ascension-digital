@@ -39,6 +39,9 @@
     "date_retour": {
       "type": "string",
       "format": "date"
+    },
+    "id_argent": {
+      "type": "string"
     }
   },
   "required": [

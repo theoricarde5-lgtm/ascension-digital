@@ -75,6 +75,7 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
               <div className="text-[16px] font-semibold text-white mb-1">{a.nom}</div>
               {a.description && <div className="text-[12.5px] leading-snug mb-2" style={{ color: '#808080' }}>{a.description}</div>}
               {a.locataire && <div className="text-[11.5px] flex items-center gap-1.5" style={{ color: '#808080' }}><span style={{ color: '#666' }}>Loué à :</span> {a.locataire}</div>}
+              {a.id_argent && <div className="text-[11.5px] flex items-center gap-1.5" style={{ color: '#808080' }}><span style={{ color: '#666' }}>ID argent :</span> {a.id_argent}</div>}
               <div className="flex items-center justify-between mt-3">
                 <div className="text-[14px] font-bold text-white">{a.prix_location ? `${a.prix_location} $` : '—'}<span className="text-[11px] font-normal" style={{ color: '#666' }}> /location</span></div>
                 {a.caution ? <div className="text-[11px]" style={{ color: '#808080' }}>Caution : {a.caution} $</div> : null}
@@ -134,7 +135,7 @@ function Pill({ label, active, onClick }) {
 }
 
 function AddModal({ onClose, onAdd }) {
-  const [form, setForm] = useState({ nom: '', categorie: '', prix_location: '', caution: '', quantite: '', description: '' });
+  const [form, setForm] = useState({ nom: '', categorie: '', prix_location: '', caution: '', quantite: '', description: '', id_argent: '' });
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -146,6 +147,7 @@ function AddModal({ onClose, onAdd }) {
       prix_location: parseFloat(form.prix_location) || 0,
       caution: parseFloat(form.caution) || 0,
       quantite: parseInt(form.quantite) || 1,
+      id_argent: form.id_argent.trim(),
     });
   };
   const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
@@ -181,6 +183,11 @@ function AddModal({ onClose, onAdd }) {
           <div>
             <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Quantité</label>
             <input name="quantite" type="number" value={form.quantite} onChange={handleChange} placeholder="1"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>ID de l'argent</label>
+            <input name="id_argent" value={form.id_argent} onChange={handleChange} placeholder="Référence / ID argent"
               className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
           </div>
           <div className="col-span-2">
