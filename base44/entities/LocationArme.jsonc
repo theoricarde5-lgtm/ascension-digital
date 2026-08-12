@@ -1,0 +1,58 @@
+{
+  "name": "LocationArme",
+  "type": "object",
+  "properties": {
+    "arme_nom": {
+      "type": "string"
+    },
+    "arme_id": {
+      "type": "string"
+    },
+    "locataire": {
+      "type": "string"
+    },
+    "date_debut": {
+      "type": "string",
+      "format": "date"
+    },
+    "date_retour": {
+      "type": "string",
+      "format": "date"
+    },
+    "caution": {
+      "type": "number"
+    },
+    "prix_location": {
+      "type": "number"
+    },
+    "option_retour": {
+      "type": "string",
+      "enum": [
+        "total",
+        "caution",
+        "location",
+        "none"
+      ]
+    },
+    "montant_encaisse": {
+      "type": "number",
+      "default": 0
+    },
+    "statut": {
+      "type": "string",
+      "enum": [
+        "En cours",
+        "Rendu"
+      ],
+      "default": "En cours"
+    },
+    "date_retour_effective": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "arme_nom",
+    "locataire"
+  ]
+}

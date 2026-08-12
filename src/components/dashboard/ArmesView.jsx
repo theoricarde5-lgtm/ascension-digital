@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Swords, X, KeyRound, Undo2 } from 'lucide-react';
 import StockHistory from '@/components/dashboard/StockHistory';
+import RentalHistory from '@/components/dashboard/RentalHistory';
 
-export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, movements, userRole, onDeleteMovement, onDeleteMovements }) {
+export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, movements, userRole, onDeleteMovement, onDeleteMovements, locations, onDeleteLocation, onDeleteLocations }) {
   const [query, setQuery] = useState('');
   const [activeStatut, setActiveStatut] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -109,7 +110,8 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
         <ReturnModal arme={returnTarget} onClose={() => setReturnTarget(null)} onConfirm={(option) => { onReturn?.(returnTarget, option); setReturnTarget(null); }} />
       )}
 
-      <StockHistory movements={movements} keyword="arme" title="Historique des armes" subtitle="Locations et mouvements d'armes" userRole={userRole} onDelete={onDeleteMovement} onDeleteAll={onDeleteMovements} />
+      <RentalHistory locations={locations || []} userRole={userRole} onDelete={onDeleteLocation} onDeleteAll={onDeleteLocations} />
+      <StockHistory movements={movements} keyword="arme" title="Historique des encaissements" subtitle="Mouvements financiers liés aux armes" userRole={userRole} onDelete={onDeleteMovement} onDeleteAll={onDeleteMovements} />
     </div>
   );
 }

@@ -34,6 +34,7 @@ export default function Dashboard() {
   const [logs, setLogs] = useState([]);
   const [sources, setSources] = useState([]);
   const [armes, setArmes] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -58,7 +59,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs] = await Promise.all([
         base44.entities.Objet.list('-created_date', 500),
         base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
@@ -72,6 +73,7 @@ export default function Dashboard() {
         base44.entities.Source.list(),
         base44.entities.Arme.list('-created_date', 50),
         base44.entities.Transaction.list('-created_date', 200),
+        base44.entities.LocationArme.list('-created_date', 200),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -86,6 +88,7 @@ export default function Dashboard() {
       setSources(src);
       setArmes(ar);
       setTransactions(tr);
+      setLocations(locs);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -123,6 +126,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Source, setSources),
       subscribeEntity(base44.entities.Arme, setArmes),
       subscribeEntity(base44.entities.Transaction, setTransactions),
+      subscribeEntity(base44.entities.LocationArme, setLocations),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -157,6 +161,16 @@ export default function Dashboard() {
         date_retour: data.date_retour,
         caution: data.caution,
       });
+      await base44.entities.LocationArme.create({
+        arme_nom: a.nom,
+        arme_id: a.id,
+        locataire: data.locataire,
+        date_debut: data.date_debut,
+        date_retour: data.date_retour,
+        caution: data.caution || 0,
+        prix_location: a.prix_location || 0,
+        statut: 'En cours',
+      });
       await logAction('Location arme', `${a.nom} → ${data.locataire}`);
     } catch (e) {}
     await loadAll();
@@ -169,11 +183,11 @@ export default function Dashboard() {
         date_debut: '',
         date_retour: '',
       });
+      const caution = a.caution || 0;
+      const location = a.prix_location || 0;
+      let montant = 0;
+      let label = '';
       if (option && option !== 'none') {
-        const caution = a.caution || 0;
-        const location = a.prix_location || 0;
-        let montant = 0;
-        let label = '';
         if (option === 'caution') { montant = caution; label = `caution ${caution}$`; }
         else if (option === 'location') { montant = location; label = `location ${location}$`; }
         else if (option === 'total') { montant = caution + location; label = `caution ${caution}$ + location ${location}$`; }
@@ -186,6 +200,26 @@ export default function Dashboard() {
       } else {
         await logAction('Retour arme', `${a.nom} — sans encaissement`);
       }
+      // Mettre à jour la location correspondante
+      try {
+        const locs = await base44.entities.LocationArme.filter({ arme_id: a.id, statut: 'En cours' });
+        if (locs.length) {
+          await base44.entities.LocationArme.update(locs[0].id, {
+            statut: 'Rendu',
+            option_retour: option || 'none',
+            montant_encaisse: montant,
+            date_retour_effective: new Date().toISOString(),
+          });
+        }
+      } catch (e) {}
+    } catch (e) {}
+    await loadAll();
+  };
+  const deleteLocation = async (l) => { try { await base44.entities.LocationArme.delete(l.id); } catch (e) {} await loadAll(); };
+  const deleteLocationsBatch = async (list) => {
+    try {
+      await base44.entities.LocationArme.deleteMany({ id: { $in: list.map(l => l.id) } });
+      await logAction('Suppression historique locations', `${list.length} location(s)`);
     } catch (e) {}
     await loadAll();
   };
@@ -396,7 +430,7 @@ export default function Dashboard() {
         )}
 
         {view === 'armes' && (
-          <ArmesView armes={armes} onAdd={addArme} onDelete={deleteArme} onRent={louerArme} onReturn={rendreArme} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
+          <ArmesView armes={armes} onAdd={addArme} onDelete={deleteArme} onRent={louerArme} onReturn={rendreArme} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} locations={locations} onDeleteLocation={deleteLocation} onDeleteLocations={deleteLocationsBatch} />
         )}
 
         {view === 'calculateur' && (
