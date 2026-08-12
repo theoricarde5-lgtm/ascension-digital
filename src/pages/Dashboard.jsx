@@ -12,6 +12,7 @@ import OutilsView from '@/components/dashboard/OutilsView';
 import PermissionsView from '@/components/dashboard/PermissionsView';
 import ComptesView from '@/components/dashboard/ComptesView';
 import LogsView from '@/components/dashboard/LogsView';
+import PasswordsView from '@/components/dashboard/PasswordsView';
 import SettingsView from '@/components/dashboard/SettingsView';
 import SourcesView from '@/components/dashboard/SourcesView';
 import ArmesView from '@/components/dashboard/ArmesView';
@@ -127,6 +128,13 @@ export default function Dashboard() {
   const deleteRole = async (r) => { try { await base44.entities.Role.delete(r.id); await logAction('Suppression rôle', `Rôle "${r.nom}" supprimé`); } catch (e) {} await loadAll(); };
   const addCompte = async (data) => { await base44.entities.Compte.create(data); await logAction('Création compte', `Compte "${data.nom}" (${data.matricule}) — ${data.role}`); await loadAll(); };
   const deleteCompte = async (c) => { try { await base44.entities.Compte.delete(c.id); await logAction('Suppression compte', `Compte "${c.nom}" (${c.matricule}) supprimé`); } catch (e) {} await loadAll(); };
+  const updateComptePassword = async (c, password) => {
+    try {
+      await base44.entities.Compte.update(c.id, { password });
+      await logAction('Modification mot de passe', `Compte "${c.nom}" (${c.matricule})`);
+    } catch (e) {}
+    await loadAll();
+  };
 
   const addSource = async (nom) => { try { await base44.entities.Source.create({ nom: nom.trim() }); } catch (e) {} await loadAll(); };
   const addArme = async (data) => {
@@ -344,6 +352,10 @@ export default function Dashboard() {
 
         {view === 'logs' && currentUser?.role === 'Dev' && (
           <LogsView logs={logs} />
+        )}
+
+        {view === 'passwords' && currentUser?.role === 'Dev' && (
+          <PasswordsView comptes={comptes} onUpdatePassword={updateComptePassword} />
         )}
 
         {view === 'parametres' && (
