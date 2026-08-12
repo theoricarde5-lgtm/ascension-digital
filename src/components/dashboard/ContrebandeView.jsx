@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
-import { Search, FlaskConical, X, DollarSign } from 'lucide-react';
+import { Search, FlaskConical, X, DollarSign, Plus } from 'lucide-react';
 import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function ContrebandeView({ items, onDelete, onSell, movements, userRole, onDeleteMovement, onDeleteMovements }) {
+export default function ContrebandeView({ items, onAdd, onDelete, onSell, movements, userRole, onDeleteMovement, onDeleteMovements }) {
   const [query, setQuery] = useState('');
   const [activeType, setActiveType] = useState('Tous');
   const [sellTarget, setSellTarget] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const totalUnits = items.reduce((s, o) => s + (o.quantite || 0), 0);
   const gazCount = items.filter(i => i.type === 'Gaz Bz').length;
@@ -30,6 +31,11 @@ export default function ContrebandeView({ items, onDelete, onSell, movements, us
             {items.length} article{items.length > 1 ? 's' : ''} · {gazCount} Gaz Bz · {plaqueCount} Fausses plaques · {totalUnits} unité{totalUnits > 1 ? 's' : ''}
           </p>
         </div>
+        <button onClick={() => setModalOpen(true)}
+          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-[13.5px] font-semibold text-white"
+          style={{ background: 'var(--montoya-accent)' }}>
+          <Plus size={16} /> Ajouter
+        </button>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-center gap-3 mb-6">
@@ -93,6 +99,10 @@ export default function ContrebandeView({ items, onDelete, onSell, movements, us
         <SellModal item={sellTarget} onClose={() => setSellTarget(null)} onConfirm={(qte, prix) => { onSell?.(sellTarget, qte, prix); setSellTarget(null); }} />
       )}
 
+      {modalOpen && (
+        <AddModal onClose={() => setModalOpen(false)} onAdd={(data) => { onAdd(data); setModalOpen(false); }} />
+      )}
+
       <StockHistory movements={movements} keyword="contrebande" title="Historique de la contrebande" subtitle="Ventes et mouvements liés au stock" userRole={userRole} onDelete={onDeleteMovement} onDeleteAll={onDeleteMovements} />
     </div>
   );
@@ -115,6 +125,67 @@ function Pill({ label, active, onClick }) {
       style={active ? { background: 'var(--montoya-accent)', color: '#fff' } : { background: '#1c1c1c', color: '#ccc', border: '1px solid rgba(255,255,255,0.06)' }}>
       {label}
     </button>
+  );
+}
+
+function AddModal({ onClose, onAdd }) {
+  const [form, setForm] = useState({ nom: '', type: 'Gaz Bz', prix: '', quantite: '', description: '' });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.nom.trim()) return;
+    onAdd({
+      nom: form.nom.trim(),
+      type: form.type,
+      description: form.description.trim(),
+      prix: parseFloat(form.prix) || 0,
+      quantite: parseInt(form.quantite) || 0,
+    });
+  };
+  const inputStyle = { background: '#121212', border: '1px solid rgba(255,255,255,0.08)', color: '#fff' };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div className="w-full max-w-[480px] rounded-2xl p-6" style={{ background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.08)' }} onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-[17px] font-semibold text-white">Ajouter un article</h3>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#808080', background: '#121212' }}><X size={16} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Nom *</label>
+            <input name="nom" value={form.nom} onChange={handleChange} required placeholder="Nom"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Type</label>
+            <select name="type" value={form.type} onChange={handleChange} className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle}>
+              <option value="Gaz Bz">Gaz Bz</option>
+              <option value="Fausse plaque">Fausse plaque</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Prix ($)</label>
+            <input name="prix" type="number" value={form.prix} onChange={handleChange} placeholder="0"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Quantité</label>
+            <input name="quantite" type="number" value={form.quantite} onChange={handleChange} placeholder="0"
+              className="w-full rounded-xl px-3 py-2.5 text-[13px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1.5" style={{ color: '#808080' }}>Description</label>
+            <textarea name="description" value={form.description} onChange={handleChange} placeholder="Détails..."
+              className="w-full rounded-xl px-3 py-2.5 text-[13px] resize-none min-h-[70px]" style={inputStyle} />
+          </div>
+          <div className="col-span-2 flex justify-end gap-2 mt-1">
+            <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
+            <button type="submit" className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Ajouter</button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 
