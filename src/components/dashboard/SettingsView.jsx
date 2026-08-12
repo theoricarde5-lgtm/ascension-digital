@@ -21,8 +21,7 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
 
   const initials = (nom) => (nom || '?').split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
 
-  const handlePhotoUpload = async (e) => {
-    const file = e.target.files?.[0];
+  const uploadPhotoFile = async (file) => {
     if (!file) return;
     setPhotoUploading(true);
     try {
@@ -32,6 +31,24 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
       setProfileMsg({ type: 'error', text: 'Échec de l\'upload de la photo.' });
     } finally {
       setPhotoUploading(false);
+    }
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    await uploadPhotoFile(file);
+  };
+
+  const handlePhotoPaste = async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const it of items) {
+      if (it.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = it.getAsFile();
+        await uploadPhotoFile(file);
+        return;
+      }
     }
   };
 
@@ -165,6 +182,11 @@ export default function SettingsView({ currentUser, onChangePassword, onUpdatePr
                   <button type="button" onClick={() => setPhoto('')}
                     className="text-[12px]" style={{ color: '#808080' }}>Retirer</button>
                 )}
+              </div>
+              <div tabIndex={0} onPaste={handlePhotoPaste}
+                className="mt-2.5 rounded-xl px-3.5 py-2.5 text-[12px] text-center cursor-text outline-none transition-colors focus:text-white"
+                style={{ background: '#121212', border: '1px dashed rgba(255,255,255,0.18)', color: '#808080' }}>
+                Collez une image ici (Ctrl+V) pour définir la photo
               </div>
             </div>
 
