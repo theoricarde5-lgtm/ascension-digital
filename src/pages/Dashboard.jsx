@@ -234,16 +234,22 @@ export default function Dashboard() {
     await loadAll();
   };
   const deleteArsenalArgent = async (m) => { try { await base44.entities.ArsenalArgent.delete(m.id); } catch (e) {} await loadAll(); };
-  const addContrebande = async (data) => {
-    await base44.entities.Contrebande.create(data);
+  const sellContrebande = async (c, qte, prix) => {
+    const qty = Math.max(1, parseInt(qte) || 1);
+    const newQte = Math.max(0, (c.quantite || 0) - qty);
+    const salePrice = parseFloat(prix) || 0;
     try {
-      await base44.entities.Movement.create({
-        type: 'retrait',
-        montant: (data.prix || 0) * (data.quantite || 0),
-        note: `Achat contrebande : ${data.nom}${data.type ? ` (${data.type})` : ''}`
+      await base44.entities.Contrebande.update(c.id, {
+        quantite: newQte,
+        statut: newQte === 0 ? 'Vendu' : (c.statut || 'Disponible')
       });
+      await base44.entities.Movement.create({
+        type: 'depot',
+        montant: salePrice * qty,
+        note: `Vente contrebande : ${c.nom}${c.type ? ` (${c.type})` : ''} (x${qty})`
+      });
+      await logAction('Vente contrebande', `${c.nom} (x${qty}) — ${salePrice * qty}$`);
     } catch (e) {}
-    await logAction('Ajout contrebande', `${data.nom}${data.type ? ` (${data.type})` : ''} — ${data.quantite || 0} × ${data.prix || 0}$`);
     await loadAll();
   };
   const deleteContrebande = async (c) => { try { await base44.entities.Contrebande.delete(c.id); await logAction('Suppression contrebande', `${c.nom}`); } catch (e) {} await loadAll(); };
@@ -473,7 +479,7 @@ export default function Dashboard() {
         )}
 
         {view === 'contrebande' && (
-          <ContrebandeView items={contrebande} sources={sources} onAdd={addContrebande} onDelete={deleteContrebande} movements={movements} onAddSource={addSource} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
+          <ContrebandeView items={contrebande} onDelete={deleteContrebande} onSell={sellContrebande} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
         )}
       </main>
     </div>
