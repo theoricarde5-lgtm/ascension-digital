@@ -34,6 +34,7 @@ export default function Dashboard() {
   const [logs, setLogs] = useState([]);
   const [sources, setSources] = useState([]);
   const [armes, setArmes] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -57,7 +58,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr] = await Promise.all([
         base44.entities.Objet.list('-created_date', 500),
         base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
@@ -70,6 +71,7 @@ export default function Dashboard() {
         base44.entities.Log.list('-created_date', 100),
         base44.entities.Source.list(),
         base44.entities.Arme.list('-created_date', 50),
+        base44.entities.Transaction.list('-created_date', 200),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -83,6 +85,7 @@ export default function Dashboard() {
       setLogs(lg);
       setSources(src);
       setArmes(ar);
+      setTransactions(tr);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -119,6 +122,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.Log, setLogs),
       subscribeEntity(base44.entities.Source, setSources),
       subscribeEntity(base44.entities.Arme, setArmes),
+      subscribeEntity(base44.entities.Transaction, setTransactions),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -259,13 +263,26 @@ export default function Dashboard() {
     await loadAll();
   };
 
-  const validateCalculateur = useCallback(async ({ total, count, details }) => {
+  const validateCalculateur = useCallback(async ({ total, count, details, items }) => {
     try {
       await base44.entities.Movement.create({
         type: 'retrait',
         montant: total,
         note: `Calcul validé : ${count} objet${count > 1 ? 's' : ''} — ${details}`
       });
+      if (items && items.length) {
+        await base44.entities.Transaction.bulkCreate(
+          items.filter(it => it.vendeur).map(it => ({
+            nom: it.nom || '',
+            type: it.type || '',
+            categorie: '',
+            prix: it.prix || 0,
+            quantite: it.quantite || 0,
+            vendeur: it.vendeur,
+            source: 'Calculateur',
+          }))
+        );
+      }
       await logAction('Calcul validé (débit coffre)', `${count} objet${count > 1 ? 's' : ''} — ${total}€`);
     } catch (e) {}
     await loadAll();
@@ -363,7 +380,7 @@ export default function Dashboard() {
         )}
 
         {view === 'groupes' && (
-          <SourcesView sources={sources} onAdd={addSource} objets={objets} bijoux={bijoux} />
+          <SourcesView sources={sources} onAdd={addSource} objets={objets} bijoux={bijoux} transactions={transactions} />
         )}
 
         {view === 'armes' && (

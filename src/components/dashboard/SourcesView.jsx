@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Tags, Plus, X, ArrowLeft, Box, Gem } from 'lucide-react';
 
-export default function SourcesView({ sources, onAdd, objets = [], bijoux = [] }) {
+export default function SourcesView({ sources, onAdd, objets = [], bijoux = [], transactions = [] }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [nom, setNom] = useState('');
   const [saving, setSaving] = useState(false);
@@ -26,10 +26,14 @@ export default function SourcesView({ sources, onAdd, objets = [], bijoux = [] }
     }));
     bijoux.filter(b => b.vendeur === selected.nom).forEach(b => list.push({
       id: `b-${b.id}`, type: 'Bijou', nom: b.nom, categorie: b.categorie,
-      prix: b.prix || 0, quantite: b.quantite || 0, date: b.created_date,
+      prix: b.prix || 0, quantite: b.quantite || 0, date: b.created_date, source: 'Registre',
+    }));
+    transactions.filter(t => t.vendeur === selected.nom).forEach(t => list.push({
+      id: `t-${t.id}`, type: t.type || 'Transaction', nom: t.nom, categorie: t.categorie || '',
+      prix: t.prix || 0, quantite: t.quantite || 0, date: t.created_date, source: t.source || 'Calculateur',
     }));
     return list.sort((a, b) => new Date(b.date) - new Date(a.date));
-  }, [selected, objets, bijoux]);
+  }, [selected, objets, bijoux, transactions]);
 
   const totalAchats = txs.reduce((s, t) => s + (t.prix * t.quantite), 0);
 
@@ -77,6 +81,8 @@ export default function SourcesView({ sources, onAdd, objets = [], bijoux = [] }
                     <div className="flex items-center gap-2">
                       <span className="text-[9.5px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
                         style={{ background: '#121212', color: '#808080' }}>{t.type}</span>
+                      {t.source && <span className="text-[9px] font-medium px-1.5 py-0.5 rounded"
+                        style={{ background: 'rgba(255,87,34,0.15)', color: 'var(--montoya-accent)' }}>{t.source}</span>}
                       {t.categorie && <span className="text-[10px]" style={{ color: '#666' }}>{t.categorie}</span>}
                     </div>
                     <div className="text-[14px] font-semibold text-white truncate">{t.nom}</div>
@@ -122,7 +128,7 @@ export default function SourcesView({ sources, onAdd, objets = [], bijoux = [] }
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {sources.map(s => {
-            const count = objets.filter(o => o.vendeur === s.nom).length + bijoux.filter(b => b.vendeur === s.nom).length;
+            const count = objets.filter(o => o.vendeur === s.nom).length + bijoux.filter(b => b.vendeur === s.nom).length + transactions.filter(t => t.vendeur === s.nom).length;
             return (
               <button key={s.id} onClick={() => setSelected(s)}
                 className="rounded-2xl p-4 flex items-center gap-3 text-left transition-colors hover:brightness-110"

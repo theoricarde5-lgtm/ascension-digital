@@ -1,0 +1,31 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "nom": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "categorie": {
+      "type": "string"
+    },
+    "prix": {
+      "type": "number"
+    },
+    "quantite": {
+      "type": "number"
+    },
+    "vendeur": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "default": "Calculateur"
+    }
+  },
+  "required": [
+    "nom"
+  ]
+}
