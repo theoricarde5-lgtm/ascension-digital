@@ -217,6 +217,13 @@ export default function Dashboard() {
   const deleteBijou = async (b) => { try { await base44.entities.Bijou.delete(b.id); await logAction('Suppression bijou', `${b.nom}`); } catch (e) {} await loadAll(); };
   const addMovement = async (data) => { await base44.entities.Movement.create(data); await logAction(data.type === 'depot' ? 'Dépôt coffre' : 'Retrait coffre', `${data.montant}€${data.note ? ` — ${data.note}` : ''}`); await loadAll(); };
   const deleteMovement = async (m) => { try { await base44.entities.Movement.delete(m.id); await logAction('Suppression mouvement', `${m.type} ${m.montant}€`); } catch (e) {} await loadAll(); };
+  const deleteMovementsBatch = async (list) => {
+    try {
+      await base44.entities.Movement.deleteMany({ id: { $in: list.map(m => m.id) } });
+      await logAction('Suppression historique', `${list.length} mouvement(s)`);
+    } catch (e) {}
+    await loadAll();
+  };
   const addOutil = async (data) => {
     const existing = outils.find(o => o.nom.trim().toLowerCase() === (data.nom || '').trim().toLowerCase());
     if (existing) {
@@ -349,15 +356,15 @@ export default function Dashboard() {
         )}
 
         {view === 'objets' && (
-          <ObjetsView objets={objets} categories={categories} sources={sources} onAdd={addObjet} onDelete={deleteObjet} movements={movements} onAddSource={addSource} />
+          <ObjetsView objets={objets} categories={categories} sources={sources} onAdd={addObjet} onDelete={deleteObjet} movements={movements} onAddSource={addSource} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
         )}
 
         {view === 'bijoux' && (
-          <BijouxView bijoux={bijoux} categories={catBijoux} sources={sources} onAddSource={addSource} onAdd={addBijou} onDelete={deleteBijou} movements={movements} />
+          <BijouxView bijoux={bijoux} categories={catBijoux} sources={sources} onAddSource={addSource} onAdd={addBijou} onDelete={deleteBijou} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
         )}
 
         {view === 'outils' && (
-          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} onUpdate={updateOutil} movements={movements} />
+          <OutilsView outils={outils} categories={catOutils} onAdd={addOutil} onDelete={deleteOutil} onSell={sellOutil} onUpdate={updateOutil} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
         )}
 
         {view === 'coffre' && (
@@ -389,7 +396,7 @@ export default function Dashboard() {
         )}
 
         {view === 'armes' && (
-          <ArmesView armes={armes} onAdd={addArme} onDelete={deleteArme} onRent={louerArme} onReturn={rendreArme} movements={movements} />
+          <ArmesView armes={armes} onAdd={addArme} onDelete={deleteArme} onRent={louerArme} onReturn={rendreArme} movements={movements} userRole={currentUser?.role} onDeleteMovement={deleteMovement} onDeleteMovements={deleteMovementsBatch} />
         )}
 
         {view === 'calculateur' && (

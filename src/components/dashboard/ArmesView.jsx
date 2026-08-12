@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Plus, Swords, X, KeyRound, Undo2 } from 'lucide-react';
 import StockHistory from '@/components/dashboard/StockHistory';
 
-export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, movements }) {
+export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, movements, userRole, onDeleteMovement, onDeleteMovements }) {
   const [query, setQuery] = useState('');
   const [activeStatut, setActiveStatut] = useState('Tous');
   const [modalOpen, setModalOpen] = useState(false);
@@ -108,7 +108,7 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
         <ReturnModal arme={returnTarget} onClose={() => setReturnTarget(null)} onConfirm={(option) => { onReturn?.(returnTarget, option); setReturnTarget(null); }} />
       )}
 
-      <StockHistory movements={movements} keyword="arme" title="Historique des armes" subtitle="Locations et mouvements d'armes" />
+      <StockHistory movements={movements} keyword="arme" title="Historique des armes" subtitle="Locations et mouvements d'armes" userRole={userRole} onDelete={onDeleteMovement} onDeleteAll={onDeleteMovements} />
     </div>
   );
 }
