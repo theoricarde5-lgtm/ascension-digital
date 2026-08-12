@@ -17,6 +17,7 @@ import SettingsView from '@/components/dashboard/SettingsView';
 import SourcesView from '@/components/dashboard/SourcesView';
 import ArmesView from '@/components/dashboard/ArmesView';
 import CalculateurView from '@/components/dashboard/CalculateurView';
+import ArsenalView from '@/components/dashboard/ArsenalView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -435,6 +436,10 @@ export default function Dashboard() {
 
         {view === 'calculateur' && (
           <CalculateurView objets={objets} bijoux={bijoux} categories={catBijoux} catObjets={categories} sources={sources} onAddBijou={addBijou} onAddObjet={addObjet} onAddSource={addSource} onValidate={validateCalculateur} />
+        )}
+
+        {view === 'arsenal' && (currentUser?.role === 'Dev' || currentUser?.role === 'Teniente') && (
+          <ArsenalView armes={armes} movements={movements} />
         )}
       </main>
     </div>

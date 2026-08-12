@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -9,6 +9,7 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
   const invRef = useRef(null);
   const devRef = useRef(null);
   const isDev = userRole === 'Dev';
+  const canArsenal = userRole === 'Dev' || userRole === 'Teniente';
 
   const playNavSound = () => {
     try {
@@ -125,6 +126,15 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
           style={active === 'calculateur' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Calculator size={20} />
         </button>
+
+        {/* Arsenal - Dev & Teniente only */}
+        {canArsenal && (
+          <button onClick={() => handleNavigate('arsenal')} title="Arsenal"
+            className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
+            style={active === 'arsenal' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
+            <Crosshair size={20} />
+          </button>
+        )}
 
         {/* Separator */}
         <div className="w-8 h-px my-1" style={{ background: 'rgba(255,255,255,0.08)' }} />
