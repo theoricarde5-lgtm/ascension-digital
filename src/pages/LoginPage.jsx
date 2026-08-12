@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [matricule, setMatricule] = useState('');
   const [password, setPassword] = useState('');
   const [showPwd, setShowPwd] = useState(false);
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
@@ -18,6 +19,14 @@ export default function LoginPage() {
   const GRADE_ORDER = { Dev: 0, Teniente: 1, Capitaine: 2, Membre: 3 };
 
   useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('ls_remember') || 'null');
+      if (saved) {
+        setMatricule(saved.matricule || '');
+        setPassword(saved.password || '');
+        setRemember(true);
+      }
+    } catch (e) {}
     base44.entities.Compte.list('-created_date', 50)
       .then(list => setUsers([...list].sort((a, b) => (GRADE_ORDER[a.role] ?? 9) - (GRADE_ORDER[b.role] ?? 9) || a.nom.localeCompare(b.nom))))
       .catch(() => setUsers([]));
@@ -30,6 +39,11 @@ export default function LoginPage() {
     try {
       const res = await base44.functions.invoke('loginCheck', { matricule, password });
       if (res.data?.ok) {
+        if (remember) {
+          localStorage.setItem('ls_remember', JSON.stringify({ matricule, password }));
+        } else {
+          localStorage.removeItem('ls_remember');
+        }
         sessionStorage.setItem('ls_user', JSON.stringify(res.data.user));
         navigate('/dashboard');
       } else {
@@ -110,6 +124,14 @@ export default function LoginPage() {
                   {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+            </div>
+            <div className="flex items-center gap-2.5 -mt-1">
+              <button type="button" onClick={() => setRemember(r => !r)}
+                className="w-[18px] h-[18px] rounded-md flex items-center justify-center transition-colors"
+                style={remember ? { background: '#ff473a', border: '1px solid #ff473a' } : { background: '#141417', border: '1px solid rgba(255,255,255,0.14)' }}>
+                {remember && <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
+              </button>
+              <label onClick={() => setRemember(r => !r)} className="text-[12.5px] cursor-pointer select-none" style={{ color: '#9a9a9f' }}>Se souvenir de mes identifiants</label>
             </div>
             {error && <div className="text-[12.5px] px-3.5 py-2.5 rounded-lg" style={{ color: '#ff7a6a', background: 'rgba(255,71,58,0.08)' }}>{error}</div>}
             <button type="submit" disabled={loading}
