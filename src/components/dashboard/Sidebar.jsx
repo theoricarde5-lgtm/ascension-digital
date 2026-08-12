@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair, FlaskConical, Globe } from 'lucide-react';
+import { LayoutGrid, Box, Gem, Wallet, Wrench, LogOut, Package, Shield, Users, ScrollText, Settings, Tags, Swords, Calculator, KeyRound, Crosshair, FlaskConical, Globe, ClipboardList } from 'lucide-react';
 
 export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) {
   const navigate = useNavigate();
@@ -140,6 +140,13 @@ export default function Sidebar({ active = 'dashboard', onNavigate, userRole }) 
           className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
           style={active === 'groupes' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
           <Tags size={20} />
+        </button>
+
+        {/* Suivi de groupe - just below Groupes */}
+        <button onClick={() => handleNavigate('suivi')} title="Suivi de groupe"
+          className="w-11 h-11 rounded-xl flex items-center justify-center transition-colors"
+          style={active === 'suivi' ? { background: 'var(--montoya-accent)', color: '#fff' } : { color: '#808080' }}>
+          <ClipboardList size={20} />
         </button>
 
         {/* Calculateur - top level */}

@@ -20,6 +20,7 @@ import CalculateurView from '@/components/dashboard/CalculateurView';
 import ArsenalView from '@/components/dashboard/ArsenalView';
 import ContrebandeView from '@/components/dashboard/ContrebandeView';
 import IpLogsView from '@/components/dashboard/IpLogsView';
+import SuiviGroupeView from '@/components/dashboard/SuiviGroupeView';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export default function Dashboard() {
   const [contrebande, setContrebande] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [ipLogs, setIpLogs] = useState([]);
+  const [fichesSuivi, setFichesSuivi] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -65,7 +67,7 @@ export default function Dashboard() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa, cb2, ips] = await Promise.all([
+      const [o, b, c, cb, mv, ou, co, rl, cp, lg, src, ar, tr, locs, aa, cb2, ips, fs] = await Promise.all([
         base44.entities.Objet.list('-created_date', 500),
         base44.entities.Bijou.list('-created_date', 500),
         base44.entities.Categorie.list(),
@@ -83,6 +85,7 @@ export default function Dashboard() {
         base44.entities.ArsenalArgent.list('-created_date', 200),
         base44.entities.Contrebande.list('-created_date', 500),
         base44.entities.IpLog.list('-created_date', 200),
+        base44.entities.FicheSuivi.list('-created_date', 500),
       ]);
       setObjets(o);
       setBijoux(b);
@@ -101,6 +104,7 @@ export default function Dashboard() {
       setArsenalArgent(aa);
       setContrebande(cb2);
       setIpLogs(ips);
+      setFichesSuivi(fs);
     } catch (e) {
       // entities may be empty / just created
     } finally {
@@ -142,6 +146,7 @@ export default function Dashboard() {
       subscribeEntity(base44.entities.ArsenalArgent, setArsenalArgent),
       subscribeEntity(base44.entities.Contrebande, setContrebande),
       subscribeEntity(base44.entities.IpLog, setIpLogs),
+      subscribeEntity(base44.entities.FicheSuivi, setFichesSuivi),
     ];
     return () => unsubs.forEach(u => u && u());
   }, []);
@@ -278,6 +283,12 @@ export default function Dashboard() {
     } catch (e) {}
     await loadAll();
   };
+  const addFicheSuivi = async (data) => {
+    await base44.entities.FicheSuivi.create(data);
+    await logAction('Création fiche suivi', `${data.groupe}${data.type_activite ? ` (${data.type_activite})` : ''}`);
+    await loadAll();
+  };
+  const deleteFicheSuivi = async (f) => { try { await base44.entities.FicheSuivi.delete(f.id); await logAction('Suppression fiche suivi', `${f.groupe}`); } catch (e) {} await loadAll(); };
   const deleteLocationsBatch = async (list) => {
     try {
       await base44.entities.LocationArme.deleteMany({ id: { $in: list.map(l => l.id) } });
@@ -489,6 +500,10 @@ export default function Dashboard() {
 
         {view === 'groupes' && (
           <SourcesView sources={sources} onAdd={addSource} objets={objets} bijoux={bijoux} transactions={transactions} onDeleteTransaction={deleteTransaction} />
+        )}
+
+        {view === 'suivi' && (
+          <SuiviGroupeView fiches={fichesSuivi} onAdd={addFicheSuivi} onDelete={deleteFicheSuivi} userRole={currentUser?.role} currentUser={currentUser} />
         )}
 
         {view === 'armes' && (

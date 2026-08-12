@@ -1,0 +1,46 @@
+{
+  "name": "FicheSuivi",
+  "type": "object",
+  "properties": {
+    "groupe": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "lieu": {
+      "type": "string"
+    },
+    "membres": {
+      "type": "string"
+    },
+    "type_activite": {
+      "type": "string",
+      "enum": [
+        "R\u00e9union",
+        "Patrouille",
+        "Transaction",
+        "Mission",
+        "Entra\u00eenement",
+        "Autre"
+      ],
+      "default": "R\u00e9union"
+    },
+    "description": {
+      "type": "string"
+    },
+    "resultat": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "auteur": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "groupe"
+  ]
+}
