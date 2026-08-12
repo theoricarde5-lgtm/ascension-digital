@@ -322,7 +322,12 @@ export default function Dashboard() {
   const totalUnits = objets.reduce((s, o) => s + (o.quantite || 0), 0);
 
   return (
-    <div className="min-h-screen" style={{ background: '#121212' }}>
+    <div className="min-h-screen relative" style={{
+      backgroundImage: `linear-gradient(rgba(10,10,10,0.82), rgba(10,10,10,0.88)), url('https://media.base44.com/images/public/6a78e21367f0139109c57ae6/f095f1825_image.png')`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed',
+    }}>
       <Sidebar active={view} onNavigate={setView} userRole={currentUser?.role} />
       <main className="ml-[72px] px-6 lg:px-10 py-6">
         <TopBar query={query} setQuery={setQuery} />
