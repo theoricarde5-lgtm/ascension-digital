@@ -363,7 +363,7 @@ export default function Dashboard() {
         )}
 
         {view === 'groupes' && (
-          <SourcesView sources={sources} onAdd={addSource} />
+          <SourcesView sources={sources} onAdd={addSource} objets={objets} bijoux={bijoux} />
         )}
 
         {view === 'armes' && (
