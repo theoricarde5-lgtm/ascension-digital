@@ -9,12 +9,16 @@
 <body>
   <div id="overlay">
     <div id="topbar">
-      <span id="title">MONTOYA</span>
-      <button id="closeBtn">Fermer ✕</button>
+      <div class="topbar-left">
+        <div class="logo-badge">M</div>
+        <span id="title">MONTOYA</span>
+      </div>
+      <div class="topbar-right">
+        <span id="userBadge"></span>
+        <button id="closeBtn">Fermer ✕</button>
+      </div>
     </div>
-    <div class="tablet-screen">
-      <iframe id="frame" src="https://comptamontoya.com/" allow="clipboard-read; clipboard-write"></iframe>
-    </div>
+    <div id="app"></div>
   </div>
   <script src="app.js"></script>
 </body>

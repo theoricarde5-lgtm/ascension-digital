@@ -1,19 +1,9 @@
 -- =========================================================
---  Montoya — NUI
---  Remplace SITE_URL par l'URL publique de ton site publié
+--  Montoya — NUI (app autonome intégrée)
 -- =========================================================
 
-local SITE_URL = 'https://comptamontoya.com'
 local TOGGLE_KEY = 'F6' -- Touche pour ouvrir/fermer (voir https://docs.fivem.net/docs/game-references/controls/)
 local isOpen = false
-
--- Crée la NUI une fois au démarrage
-CreateThread(function()
-  SendNUIMessage({
-    type = 'init',
-    url = SITE_URL
-  })
-end)
 
 -- Ouvre / ferme la NUI
 local function toggleNUI()
@@ -22,13 +12,17 @@ local function toggleNUI()
   SendNUIMessage({
     type = isOpen and 'open' or 'close'
   })
+  if not isOpen then
+    -- s'assure que le focus est retiré
+    SetNuiFocus(false, false)
+  end
 end
 
 -- Touche d'ouverture
 RegisterCommand('montoya', function()
   toggleNUI()
 end, false)
-RegisterKeyMapping('montoya', 'Ouvrir le site Montoya', 'keyboard', TOGGLE_KEY)
+RegisterKeyMapping('montoya', 'Ouvrir le panel Montoya', 'keyboard', TOGGLE_KEY)
 
 -- Callback depuis la NUI (bouton fermer / ESC)
 RegisterNUICallback('close', function(_, cb)
