@@ -144,13 +144,6 @@ export default function Dashboard() {
   const deleteTransaction = async (t) => { try { await base44.entities.Transaction.delete(t.id); await logAction('Suppression transaction', `${t.nom || ''}${t.vendeur ? ` (${t.vendeur})` : ''}`); } catch (e) {} await loadAll(); };
   const addArme = async (data) => {
     await base44.entities.Arme.create(data);
-    try {
-      await base44.entities.Movement.create({
-        type: 'depot',
-        montant: data.caution || 0,
-        note: `Caution arme : ${data.nom}`
-      });
-    } catch (e) {}
     await logAction('Ajout arme', `${data.nom}${data.categorie ? ` (${data.categorie})` : ''}`);
     await loadAll();
   };
@@ -168,7 +161,7 @@ export default function Dashboard() {
     } catch (e) {}
     await loadAll();
   };
-  const rendreArme = async (a, encaisser) => {
+  const rendreArme = async (a, option) => {
     try {
       await base44.entities.Arme.update(a.id, {
         statut: 'Disponible',
@@ -176,14 +169,20 @@ export default function Dashboard() {
         date_debut: '',
         date_retour: '',
       });
-      if (encaisser) {
-        const total = (a.caution || 0) + (a.prix_location || 0);
+      if (option && option !== 'none') {
+        const caution = a.caution || 0;
+        const location = a.prix_location || 0;
+        let montant = 0;
+        let label = '';
+        if (option === 'caution') { montant = caution; label = `caution ${caution}$`; }
+        else if (option === 'location') { montant = location; label = `location ${location}$`; }
+        else if (option === 'total') { montant = caution + location; label = `caution ${caution}$ + location ${location}$`; }
         await base44.entities.Movement.create({
           type: 'depot',
-          montant: total,
-          note: `Retour arme : ${a.nom} (${a.locataire || ''}) — caution ${a.caution || 0}€ + location ${a.prix_location || 0}€`
+          montant,
+          note: `Retour arme : ${a.nom} (${a.locataire || ''}) — ${label}`
         });
-        await logAction('Retour arme', `${a.nom} — encaissé ${total}€ (caution + location)`);
+        await logAction('Retour arme', `${a.nom} — encaissé ${label}`);
       } else {
         await logAction('Retour arme', `${a.nom} — sans encaissement`);
       }

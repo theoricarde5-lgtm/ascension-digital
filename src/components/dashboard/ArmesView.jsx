@@ -105,7 +105,7 @@ export default function ArmesView({ armes, onAdd, onDelete, onRent, onReturn, mo
       )}
 
       {returnTarget && (
-        <ReturnModal arme={returnTarget} onClose={() => setReturnTarget(null)} onConfirm={(encaisser) => { onReturn?.(returnTarget, encaisser); setReturnTarget(null); }} />
+        <ReturnModal arme={returnTarget} onClose={() => setReturnTarget(null)} onConfirm={(option) => { onReturn?.(returnTarget, option); setReturnTarget(null); }} />
       )}
 
       <StockHistory movements={movements} keyword="arme" title="Historique des armes" subtitle="Locations et mouvements d'armes" />
@@ -199,8 +199,11 @@ function AddModal({ onClose, onAdd }) {
 }
 
 function ReturnModal({ arme, onClose, onConfirm }) {
-  const [encaisser, setEncaisser] = useState(true);
-  const total = (arme.caution || 0) + (arme.prix_location || 0);
+  const caution = arme.caution || 0;
+  const location = arme.prix_location || 0;
+  const total = caution + location;
+
+  const btnBase = "w-full flex items-center justify-between rounded-xl px-4 py-3 text-[13px] font-semibold transition-colors";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
@@ -212,24 +215,34 @@ function ReturnModal({ arme, onClose, onConfirm }) {
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ color: '#808080', background: '#121212' }}><X size={16} /></button>
         </div>
-        <div className="rounded-xl px-4 py-3 mb-3" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="rounded-xl px-4 py-3 mb-4" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
           <div className="flex items-center justify-between text-[12px]" style={{ color: '#808080' }}>
-            <span>Caution</span><span style={{ color: '#fff' }}>{arme.caution || 0} $</span>
+            <span>Caution</span><span style={{ color: '#fff' }}>{caution} $</span>
           </div>
           <div className="flex items-center justify-between text-[12px] mt-1" style={{ color: '#808080' }}>
-            <span>Prix location</span><span style={{ color: '#fff' }}>{arme.prix_location || 0} $</span>
+            <span>Prix location</span><span style={{ color: '#fff' }}>{location} $</span>
           </div>
           <div className="flex items-center justify-between text-[13px] font-semibold mt-2 pt-2" style={{ color: '#fff', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <span>Total</span><span>{total} $</span>
           </div>
         </div>
-        <label className="flex items-center gap-2.5 rounded-xl px-4 py-3 cursor-pointer mb-4" style={{ background: '#121212', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <input type="checkbox" checked={encaisser} onChange={(e) => setEncaisser(e.target.checked)} className="w-4 h-4 accent-orange-500" />
-          <span className="text-[12.5px]" style={{ color: '#ccc' }}>Encaisser {total} $ dans le coffre</span>
-        </label>
+        <div className="space-y-2 mb-4">
+          <button type="button" onClick={() => onConfirm('total')} disabled={total === 0}
+            className={btnBase} style={{ background: 'var(--montoya-accent)', color: '#fff', opacity: total === 0 ? 0.4 : 1 }}>
+            <span className="flex items-center gap-2"><KeyRound size={15} /> Encaisser total</span><span>{total} $</span>
+          </button>
+          <button type="button" onClick={() => onConfirm('caution')} disabled={caution === 0}
+            className={btnBase} style={{ background: '#121212', color: '#ff7a4d', border: '1px solid rgba(255,255,255,0.08)', opacity: caution === 0 ? 0.4 : 1 }}>
+            <span className="flex items-center gap-2"><KeyRound size={15} /> Encaisser caution</span><span>{caution} $</span>
+          </button>
+          <button type="button" onClick={() => onConfirm('location')} disabled={location === 0}
+            className={btnBase} style={{ background: '#121212', color: '#4ade80', border: '1px solid rgba(255,255,255,0.08)', opacity: location === 0 ? 0.4 : 1 }}>
+            <span className="flex items-center gap-2"><KeyRound size={15} /> Encaisser location</span><span>{location} $</span>
+          </button>
+        </div>
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="rounded-xl px-4 py-2.5 text-[13px] font-medium" style={{ color: '#ccc', background: '#121212' }}>Annuler</button>
-          <button type="button" onClick={() => onConfirm(encaisser)} className="rounded-xl px-4 py-2.5 text-[13px] font-semibold text-white" style={{ background: 'var(--montoya-accent)' }}>Confirmer le retour</button>
+          <button type="button" onClick={() => onConfirm('none')} className="rounded-xl px-4 py-2.5 text-[13px] font-semibold" style={{ color: '#808080', background: '#121212', border: '1px solid rgba(255,255,255,0.08)' }}>Rendre sans encaisser</button>
         </div>
       </div>
     </div>
