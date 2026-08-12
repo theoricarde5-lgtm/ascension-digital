@@ -81,10 +81,22 @@ async function reload(entity) {
 }
 
 // ---- Auth ----
+const safeStore = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+};
 async function bootLogin() {
-  const saved = JSON.parse(localStorage.getItem('ls_user') || 'null');
-  if (saved && saved.matricule) { user = saved; await enterApp(); return; }
-  renderLogin();
+  try {
+    const saved = JSON.parse(safeStore.get('ls_user') || 'null');
+    if (saved && saved.matricule) { user = saved; await enterApp(); return; }
+    renderLogin();
+  } catch (err) {
+    showError(err);
+  }
+}
+function showError(err) {
+  const root = $('#app');
+  if (root) root.innerHTML = `<div style="padding:40px;color:#ff7a6a;font-family:monospace;font-size:13px;white-space:pre-wrap">Erreur d'initialisation :\n${(err && err.stack) || String(err)}</div>`;
 }
 
 function renderLogin() {
@@ -107,7 +119,7 @@ function renderLogin() {
           const res = await invokeFn('loginCheck', { matricule: m, password: p });
           if (res.ok) {
             user = res.user;
-            localStorage.setItem('ls_user', JSON.stringify(user));
+            safeStore.set('ls_user', JSON.stringify(user));
             await enterApp();
           } else {
             errBox.textContent = res.error || 'Connexion échouée';
